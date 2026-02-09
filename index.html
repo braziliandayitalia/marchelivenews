@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marche Live | Radar Regionale</title>
+    <meta name="description"
+        content="Marche Live: Il portale hi-tech per notizie, curiosità e lifestyle della regione Marche.">
+    <!-- PWA -->
+    <meta name="theme-color" content="#020408">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041916.png">
+
+    <!-- SEO & Social Sharing (OG/Twitter) -->
+    <meta property="og:title" content="Marche Live | Radar Regionale">
+    <meta property="og:description"
+        content="Il portale hi-tech per notizie, curiosità e lifestyle delle Marche. Aggiornamenti in tempo reale.">
+    <meta property="og:image" content="https://marchelivenews.it/img/og-preview.png">
+    <meta property="og:url" content="https://marchelivenews.it">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Marche Live | Radar Regionale">
+    <meta name="twitter:description" content="Il cuore tecnologico dell'informazione regionale nelle Marche.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="tech-theme">
+    <div class="background-glow"></div>
+
+    <header class="tech-header">
+        <div class="container header-content">
+            <div class="system-status">
+                <span class="status-dot"></span> REDAZIONE ATTIVA // MARCHE_LIVE_HQ
+            </div>
+            <div class="main-logo">
+                <img src="logo.svg" alt="MARCHE LIVE" height="40">
+            </div>
+            <div class="header-tools">
+                <span id="js-clock">00:00:00</span>
+                <button class="btn-search">CERCA_NEWS</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="tech-nav">
+        <div class="container nav-wrapper">
+            <a href="#" class="nav-btn active" data-category="all">HOME</a>
+            <a href="#" class="nav-btn" data-category="sport">SPORT</a>
+            <a href="#" class="nav-btn" data-category="tecnologia">TECH</a>
+            <a href="#" class="nav-btn" data-category="moda">MODA</a>
+            <a href="#" class="nav-btn" data-category="estetica">ESTETICA</a>
+            <a href="#" class="nav-btn" data-category="personal-life">PERSONAL_LIFE</a>
+            <a href="#" class="nav-btn" data-category="lavoro">LAVORO</a>
+            <a href="#" class="nav-btn" data-category="vicino-a-noi">VICINO_A_NOI</a>
+            <a href="#" class="nav-btn" data-category="curiosita">CURIOSITÀ</a>
+            <a href="#" class="nav-btn" data-category="ricette">RICETTE</a>
+        </div>
+    </nav>
+
+    <!-- 📍 PROVINCE FILTER BAR -->
+    <div class="province-filter-bar container">
+        <span class="p-label">FILTRA PER PROVINCIA:</span>
+        <div class="p-chips" id="js-province-chips">
+            <button class="p-chip active" data-province="all">Tutte</button>
+            <button class="p-chip" data-province="AN">Ancona</button>
+            <button class="p-chip" data-province="MC">Macerata</button>
+            <button class="p-chip" data-province="PU">Pesaro-Urbino</button>
+            <button class="p-chip" data-province="AP">Ascoli Piceno</button>
+            <button class="p-chip" data-province="FM">Fermo</button>
+        </div>
+    </div>
+
+    <main class="container">
+        <!-- 🔴 TOP BREAKING NEWS BAR -->
+        <div class="breaking-news-ticker">
+            <div class="ticker-label">BREAKING_NEWS</div>
+            <div class="ticker-content">
+                <div class="ticker-track" id="js-ticker-track">
+                    <span>🚨 INCIDENTE A14: Traffico rallentato altezza Civitanova Nord</span>
+                    <span>⚠️ ALLERTA METEO: Vento forte su tutta la costa marchigiana - Prudenza</span>
+                    <span>🚧 LAVORI NOTTURNI SS16: Chiusure parziali tra Porto Recanati e Loreto</span>
+                    <span>🏀 BASKET: Pesaro vince il derby e vola in classifica</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📊 WIDGET AREA: METEO & TRAFFICO -->
+        <section class="widget-row">
+            <div class="widget-card weather-widget">
+                <div class="widget-header">METEO_LIVE_MARCHE</div>
+                <div class="weather-grid" id="js-weather-grid">
+                    <!-- Dinamico via JS -->
+                </div>
+            </div>
+
+            <div class="widget-card traffic-widget">
+                <div class="widget-header">TRAFFICO_REALTIME</div>
+                <div class="traffic-status-list" id="js-traffic-list">
+                    <!-- Dinamico via JS -->
+                </div>
+                <div class="traffic-footer">AGGIORNAMENTO: <span id="js-traffic-timer">30s</span> fa</div>
+            </div>
+
+            <div class="widget-card report-widget">
+                <div class="widget-header">COMMUNITY_DRIVEN</div>
+                <button class="btn-report" onclick="simulateReport()">📣 SEGNALA UNA NOTIZIA / PROBLEMA</button>
+                <p class="report-hint">Hai visto un incidente o un disservizio? Inviaci foto e info in tempo reale.</p>
+            </div>
+        </section>
+
+        <!-- 🔵 RADAR LIVE TICKER (Middle of page) -->
+        <div class="radar-live-ticker">
+            <div class="radar-label">RADAR_LIVE_SCAN</div>
+            <div class="radar-content">
+                <div class="ticker-track" id="js-radar-track">
+                    <!-- Dinamico via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENT ACTIVITY LOG -->
+        <div class="agent-activity-bar">
+            <span class="activity-label">SYSTEM_STATUS:</span>
+            <span id="js-writing-status">In scansione fonti esterne... Rielaborazione in corso.</span>
+        </div>
+
+        <div class="main-layout-wrapper">
+            <!-- BENTO GRID PRINCIPALE -->
+            <section class="content-section">
+                <div class="bento-grid" id="js-bento-grid">
+                    <!-- Dinamicamente via JS -->
+                </div>
+            </section>
+
+            <!-- LATERALE: CURIOSITÀ E RICETTA -->
+            <aside class="tech-sidebar">
+                <div class="side-panel curiosity-panel">
+                    <div class="panel-header">CURIOSITÀ_DEL_GIORNO</div>
+                    <div id="js-curiosity-content">
+                        <!-- Caricato via JS -->
+                    </div>
+                </div>
+
+                <div class="side-panel recipe-panel">
+                    <div class="panel-header">PIATTO_DEL_GIORNO</div>
+                    <div id="js-recipe-content">
+                        <!-- Caricato via JS -->
+                    </div>
+                </div>
+
+                <!-- 📧 NEWSLETTER / EDITORIAL -->
+                <div class="side-panel editorial-box">
+                    <div class="panel-header">DIRETTO DALLA REDAZIONE</div>
+                    <p style="font-size: 0.9rem; margin-bottom: 20px;">Iscriviti al radar quotidiano: ricevi le notizie
+                        più importanti direttamente sulla tua mail.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="latuamail@esempio.it" class="news-input">
+                        <button class="btn-subscribe">ISCRIVITI</button>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- MODALE PER DETTAGLI -->
+    <div class="modal" id="js-article-modal">
+        <div class="modal-overlay" onclick="closeArticle()"></div>
+        <div class="modal-window">
+            <button class="modal-close" onclick="closeArticle()">[X] ESCI</button>
+            <div class="modal-content" id="js-modal-content"></div>
+        </div>
+    </div>
+
+    <footer class="tech-footer">
+        <div class="container footer-flex">
+            <div class="f-info">MARCHE LIVE // AGGIORNATO OGNI 12 ORE</div>
+            <div class="f-links">
+                <a href="#">REDAZIONE</a>
+                <a href="#">TERMINI</a>
+                <a href="#">PRIVACY</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
