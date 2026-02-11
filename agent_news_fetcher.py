@@ -2,6 +2,7 @@ import feedparser
 import json
 import os
 import random
+import re
 from datetime import datetime
 
 # Fonti RSS Marche
@@ -34,41 +35,51 @@ def fetch_rss_news():
     print(f"AGENTE: Scansione fonti RSS in corso...")
     
     for source in RSS_SOURCES:
-        feed = feedparser.parse(source['url'])
-        for entry in feed.entries[:5]: # Prendi le ultime 5
-            # "Tecnifica" il titolo (simulando l'AI Agent)
-            tech_title = entry.title.upper().replace(" ", "_")
-            if ":" not in tech_title:
-                tech_title = f"LOCAL_UPDATE: {tech_title}"
-            
-            # Estrai immagine se presente
-            image_url = "https://images.unsplash.com/photo-1444653300602-7609d665975b?auto=format&fit=crop&w=1200&q=80"
-            if 'links' in entry:
-                for link in entry.links:
-                    if 'image' in link.get('type', ''):
-                        image_url = link.href
-            
-            summary_text = entry.get('summary', '') or entry.get('description', '')
-            
-            news_item = {
-                "id": random.randint(100, 999),
-                "title": tech_title,
-                "category": "cronaca",
-                "province": "AN", # General default
-                "tag": "RADAR_LIVE",
-                "author": f"Agent_{source['name'].replace(' ', '_')}",
-                "date": datetime.now().strftime("%d %b %Y").upper(),
-                "image": image_url,
-                "size": "normal",
-                "summary": summary_text[:150] + "...",
-                "source_url": entry.link,
-                "source_name": source['name']
-            }
-            all_news.append(news_item)
+        try:
+            feed = feedparser.parse(source['url'])
+            for entry in feed.entries[:8]: # Prendi più elementi per mixare meglio
+                # Titolo pulito ma tech
+                clean_title = entry.title.strip()
+                tech_title = clean_title.upper().replace(" ", "_")
+                if ":" not in tech_title:
+                    tech_title = f"LOCAL_UPDATE: {tech_title}"
+                
+                # Immagine
+                image_url = "https://images.unsplash.com/photo-1444653300602-7609d665975b?auto=format&fit=crop&w=1200&q=80"
+                if 'media_content' in entry:
+                    image_url = entry.media_content[0]['url']
+                elif 'links' in entry:
+                    for link in entry.links:
+                        if 'image' in link.get('type', ''):
+                            image_url = link.href
+                
+                # Sommario più ricco
+                summary_text = entry.get('summary', '') or entry.get('description', '')
+                # Rimuovi tag HTML e pulizia stringa
+                summary_text = re.sub('<[^<]+?>', '', summary_text).strip()
+                summary_text = summary_text.replace("&nbsp;", " ").replace("\n", " ")
+                
+                news_item = {
+                    "id": random.randint(1000, 9999),
+                    "title": tech_title,
+                    "original_title": clean_title,
+                    "category": "cronaca",
+                    "province": "AN" if "Ancona" in clean_title or "Ancona" in summary_text else "MC" if "Macerata" in clean_title else "FM" if "Fermo" in clean_title else "PU" if "Pesaro" in clean_title else "AP" if "Ascoli" in clean_title else "MARCHE",
+                    "tag": "RADAR_LIVE",
+                    "author": f"Agent_{source['name'].replace(' ', '_')}",
+                    "date": datetime.now().strftime("%d %b %Y %H:%M").upper(),
+                    "image": image_url,
+                    "size": "normal",
+                    "summary": summary_text[:300] + "...", # Più lungo
+                    "source_url": entry.link,
+                    "source_name": source['name']
+                }
+                all_news.append(news_item)
+        except Exception as e:
+            print(f"Errore su {source['name']}: {e}")
     
-    # Mischia per varietà
     random.shuffle(all_news)
-    return all_news[:10]
+    return all_news[:15] # Mostra più notizie
 
 def update_dynamic_content():
     # Ruota Curiosità
