@@ -1,44 +1,26 @@
 let newsData = [];
+let curiosityData = null;
+let recipeData = null;
 
-async function loadNewsData() {
+async function loadAllData() {
     try {
-        const response = await fetch('news.json');
-        newsData = await response.json();
+        const [newsRes, curiosityRes, recipeRes] = await Promise.all([
+            fetch('news.json'),
+            fetch('curiosity.json'),
+            fetch('recipe.json')
+        ]);
+        
+        newsData = await newsRes.json();
+        curiosityData = await curiosityRes.json();
+        recipeData = await recipeRes.json();
+        
         renderBentoGrid();
+        renderCuriosity();
+        renderRecipe();
     } catch (error) {
-        console.error('Errore nel caricamento notizie:', error);
+        console.error('Errore nel caricamento dati:', error);
     }
 }
-
-const curiosityData = {
-    title: "Le Grotte di Frasassi: Un ecosistema unico al mondo",
-    content: "Scoperte nel 1971, le Grotte di Frasassi ospitano l'Abisso Ancona, una cavità talmente vasta che potrebbe contenere il Duomo di Milano. Ma la vera curiosità è biologica: all'interno vivono specie animali uniche che non hanno mai visto la luce del sole, evolvendosi in isolamento totale per milioni di anni.",
-    img: "img/marche_village.png"
-};
-
-const recipeData = {
-    title: "Vincisgrassi: La Ricetta Originale del 1781",
-    summary: "Il piatto più prestigioso della tradizione marchigiana, con ingredienti nobili e una preparazione cerimoniale.",
-    img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80",
-    wine: "Rosso Conero Riserva DOCG (Corposo, tannico, con note di marasca)",
-    ingredients: [
-        "1kg di farina di grano tenero e 10 uova fresche",
-        "500g di carne macinata (manzo e maiale)",
-        "200g di fegatini e animelle di pollo",
-        "1 litro di latte intero per la besciamella",
-        "100g di burro artigianale",
-        "Parmigiano Reggiano stagionato 24 mesi",
-        "Vino cotto marchigiano per sfumare"
-    ],
-    steps: [
-        "Iniziare stendendo la sfoglia sottilissima e tagliandola in rettangoli.",
-        "Preparare il ragù complesso: sfumare le carni con il vino cotto per una nota aromatica unica.",
-        "Cuocere la pasta per pochi secondi e immergerla in acqua fredda.",
-        "Assemblare non meno di 10 strati con ragù e besciamella vellutata.",
-        "Ricoprire l'ultimo strato con abbondante parmigiano.",
-        "Infornare a 180°C per circa 50 minuti fino alla crosticina perfetta."
-    ]
-};
 
 const agentUpdates = [
     { source: "REDAZIONE_AI", text: "Report province aggiornato: Focus su Fermo ed Ascoli." },
@@ -50,7 +32,7 @@ let currentCategory = 'all';
 let currentProvince = 'all';
 
 function init() {
-    loadNewsData();
+    loadAllData();
     renderCuriosity();
     renderRecipe();
     renderWeather();
