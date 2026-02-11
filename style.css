@@ -69,12 +69,38 @@ body.tech-theme {
 .main-logo {
     display: flex;
     align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
 .main-logo img {
     display: block;
-    height: 42px;
+    height: 38px;
     width: auto;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1;
+}
+
+.logo-main {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #fff;
+}
+
+.logo-sub {
+    font-size: 0.7rem;
+    color: var(--accent-blue);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-top: 2px;
 }
 
 .system-status {

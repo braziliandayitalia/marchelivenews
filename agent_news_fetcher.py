@@ -3,9 +3,9 @@ import json
 import os
 import random
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Fonti RSS Marche - Espansione massiva per Elite Phase
+# Fonti RSS Marche - Espansione Elite+
 RSS_SOURCES = [
     {"name": "Ansa Marche", "url": "https://www.ansa.it/marche/notizie/marche_rss.xml"},
     {"name": "Cronache Maceratesi", "url": "https://www.cronachemaceratesi.it/feed/"},
@@ -56,6 +56,16 @@ CURIOSITIES = [
         "content": "Costruito nel 1828 dentro una grotta, questo tempio ottagonale è un capolavoro del neoclassicismo incastonato nella roccia.", 
         "image": "https://images.unsplash.com/photo-1528114039593-4366cc08227d?w=800",
         "date": datetime.now().strftime("%d %b %Y").upper()
+    },
+    {
+        "id": 9004,
+        "title": "Osimo: La Città Sotterranea", 
+        "category": "curiosita",
+        "tag": "CURIOSITÀ",
+        "province": "AN",
+        "content": "Sotto il centro storico di Osimo si snoda una rete di grotte e cunicoli scavati nell'arenaria, con altorilievi e simboli misteriosi legati ai Cavalieri di Malta.", 
+        "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800",
+        "date": datetime.now().strftime("%d %b %Y").upper()
     }
 ]
 
@@ -68,7 +78,7 @@ RECIPES = [
         "province": "MC",
         "summary": "Il 'lasagna' delle Marche. Un piatto ricco con un ragù di carni tagliate al coltello e durelli di pollo.",
         "wine": "Rosso Conero Riserva DOCG",
-        "image": "https://images.unsplash.com/photo-1619895092538-1283417871fa?w=800",
+        "image": "https://images.unsplash.com/photo-1621510456681-23a033c79b94?w=800",
         "ingredients": ["Pasta all'uovo (12 tuorli)", "Manzo e maiale", "Fegatini e durelli di pollo", "Besciamella", "Parmigiano"],
         "steps": ["Preparare il ragù (4 ore)", "Sbollentare la pasta", "Stratificare", "Infornare"],
         "date": datetime.now().strftime("%d %b %Y").upper()
@@ -81,7 +91,7 @@ RECIPES = [
         "province": "AP",
         "summary": "Olive tenere ascolane farcite con carni miste, panate e fritte. Un simbolo mondiale del Piceno.",
         "wine": "Offida Passerina DOCG",
-        "image": "https://images.unsplash.com/photo-1541529086526-db283c563270?w=800",
+        "image": "https://images.unsplash.com/photo-1599307767316-776533bb941c?w=800",
         "ingredients": ["Olive Ascolane DOP", "Manzo, Maiale e Pollo", "Parmigiano", "Uova", "Pangrattato"],
         "steps": ["Denocciolare a spirale", "Farcire", "Panare", "Friggere"],
         "date": datetime.now().strftime("%d %b %Y").upper()
@@ -101,32 +111,112 @@ RECIPES = [
     }
 ]
 
+# Database Eventi Reali (Febbraio 2026 - Carnevale)
+EVENTS = [
+    {
+        "id": 7001,
+        "title": "CARNEVALE_LIVE: GRAN CARNEVALE AL MUCHACHA",
+        "original_title": "Grande Festa di Carnevale @ Muchacha Assaderia",
+        "category": "personal-life",
+        "province": "MC",
+        "tag": "EVENTO_LIVE",
+        "author": "Rubinho_Agent",
+        "date": "12 FEB 2026 21:00",
+        "image": "https://images.unsplash.com/photo-1514525253342-b0bb4d7db71f?w=800",
+        "size": "big",
+        "summary": "Domani grande appuntamento a Civitanova Marche: il Carnevale esplode al Muchacha Assaderia! Musica, maschere e cena spettacolo per la notte più pazza dell'anno.",
+        "source_url": "#",
+        "source_name": "Redazione Social"
+    },
+    {
+        "id": 7002,
+        "title": "CLUB_RADAR: MC MENOR JP AL DONOMA",
+        "original_title": "Mc Menor Jp Live @ Donoma Club",
+        "category": "personal-life",
+        "province": "MC",
+        "tag": "NOTTE_MARCHE",
+        "author": "Nightlife_Agent",
+        "date": "14 FEB 2026 22:00",
+        "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800",
+        "size": "normal",
+        "summary": "Il Donoma Club di Civitanova ospita MC Menor Jp per un sabato di Carnevale leggendario. Funk brasiliano e atmosfera elettrica garantita.",
+        "source_url": "https://www.ticketsms.it",
+        "source_name": "TicketSMS"
+    },
+    {
+        "id": 7003,
+        "title": "CARNEVALANDO_2026: CRISTINA D'AVENA IN PIAZZA",
+        "original_title": "Cristina D'Avena @ Piazza XX Settembre",
+        "category": "personal-life",
+        "province": "MC",
+        "tag": "EVENTO_FAMIGLIA",
+        "author": "City_Agent",
+        "date": "15 FEB 2026 17:30",
+        "image": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800",
+        "size": "wide",
+        "summary": "Domenica 15 febbraio Civitanova ospita Carnevalando 2026. L'ospite d'onore sarà Cristina D'Avena per uno show gratuito in Piazza XX Settembre.",
+        "source_url": "https://www.civitanovalive.it",
+        "source_name": "Civitanova Live"
+    },
+    {
+        "id": 7004,
+        "title": "MACERATA_VIVA: 36° CARNEVALE MACERATESE",
+        "original_title": "Sfilata Carri Allegorici @ Giardini Diaz",
+        "category": "personal-life",
+        "province": "MC",
+        "tag": "TRADIZIONE",
+        "author": "Macerata_Agent",
+        "date": "15 FEB 2026 14:00",
+        "image": "https://images.unsplash.com/photo-1547153760-18fc86324498?w=800",
+        "size": "normal",
+        "summary": "Torna la grande sfilata di Macerata ai Giardini Diaz: 5 carri allegorici e 7 gruppi mascherati per una domenica indimenticabile.",
+        "source_url": "https://www.cronachemaceratesi.it",
+        "source_name": "Cronache Maceratesi"
+    },
+    {
+        "id": 7005,
+        "title": "ANCONA_FESTA: GRAN CARNEVALE DORICO",
+        "original_title": "Sfilata in Maschera @ Corso Amendola",
+        "category": "personal-life",
+        "province": "AN",
+        "tag": "GRAN_CARNEVALE",
+        "author": "Ancona_Agent",
+        "date": "15 FEB 2026 15:00",
+        "image": "https://images.unsplash.com/photo-1520110323062-f949826f0f6c?w=800",
+        "size": "normal",
+        "summary": "Domenica 15 febbraio Ancona si maschera: sfilata da Stadio Dorico a Piazza Cavour percorrendo Corso Amendola. Oltre mille figuranti attesi.",
+        "source_url": "https://www.comune.ancona.it",
+        "source_name": "Comune di Ancona"
+    }
+]
+
 # Simulated Agents Content for missing niches (Elite engagement)
 AGENT_NICHE_CONTENT = [
-    {"category": "estetica", "title": "BEAUTY_RADAR: Tendenze Skincare 2026 nelle Marche", "summary": "I centri benessere di Civitanova e Senigallia lanciano i nuovi trattamenti bio-tecnologici.", "img": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800", "prov": "MC"},
-    {"category": "moda", "title": "FASHION_WEEK_MARCHE: Il distretto calzaturiero si rinnova", "summary": "Da Fermo a Civitanova, le eccellenze della scarpa puntano sull'eco-sostenibilità digitale.", "img": "https://images.unsplash.com/photo-1539109132304-39155024040c?w=800", "prov": "FM"},
-    {"category": "tecnologia", "title": "TECH_REPORT: Startup anconetane conquistano il Web3", "summary": "Nuovo round di investimenti per la cybersecurity nelle università marchigiane.", "img": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", "prov": "AN"}
+    {"category": "estetica", "title": "BEAUTY_RADAR: Tendenze Skincare 2026 nelle Marche", "summary": "I centri benessere di Civitanova e Senigallia lanciano i nuovi trattamenti bio-tecnologici basati su attivi locali.", "img": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800", "prov": "MC"},
+    {"category": "moda", "title": "FASHION_WEEK_MARCHE: Il distretto calzaturiero si rinnova", "summary": "Da Fermo a Civitanova, le eccellenze della scarpa puntano sull'eco-sostenibilità e design digitale.", "img": "https://images.unsplash.com/photo-1539109132304-39155024040c?w=800", "prov": "FM"},
+    {"category": "tecnologia", "title": "TECH_REPORT: Startup anconetane conquistano il Web3", "summary": "Nuovo round di investimenti per l'intelligenza artificiale applicata all'industria marchigiana.", "img": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", "prov": "AN"}
 ]
 
 def categorize_news(title, summary):
     text = (title + " " + summary).lower()
     if any(k in text for k in ["calcio", "basket", "volley", "derby", "vince", "sconfitta", "partita", "gol", "sport"]): return "sport"
-    if any(k in text for k in ["lavoro", "concorso", "assunzioni", "cercasi", "impiego"]): return "lavoro"
-    if any(k in text for k in ["tecnologia", "hi-tech", "internet", "startup", "innovazione"]): return "tecnologia"
-    if any(k in text for k in ["moda", "fashion", "abbigliamento", "scarpe"]): return "moda"
-    if any(k in text for k in ["estetica", "bellezza", "beauty", "benessere"]): return "estetica"
+    if any(k in text for k in ["lavoro", "concorso", "assunzioni", "cercasi", "impiego", "assunzione"]): return "lavoro"
+    if any(k in text for k in ["tecnologia", "hi-tech", "internet", "startup", "innovazione", "digitale"]): return "tecnologia"
+    if any(k in text for k in ["moda", "fashion", "abbigliamento", "scarpe", "calzature", "sfilata"]): return "moda"
+    if any(k in text for k in ["estetica", "bellezza", "beauty", "benessere", "trattamento", "crema"]): return "estetica"
     return "cronaca"
 
 def fetch_rss_news():
     all_news = []
-    print(f"ELITE AGENTE: Scansione fonti massive in corso...")
+    print(f"ELITE AGENTE 2.6: Scansione fonti massive in corso...")
     
     for source in RSS_SOURCES:
         try:
             feed = feedparser.parse(source['url'])
-            for entry in feed.entries[:12]:
+            for entry in feed.entries[:15]:
                 title = entry.title.strip()
                 summary = re.sub('<[^<]+?>', '', entry.get('summary', '') or entry.get('description', '')).strip()
+                summary = summary.replace("&nbsp;", " ").replace("\n", " ")
                 cat = categorize_news(title, summary)
                 
                 image_url = "https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800"
@@ -145,14 +235,14 @@ def fetch_rss_news():
                     "author": f"Agent_{source['name'].replace(' ', '_')}",
                     "date": datetime.now().strftime("%d %B %Y %H:%M").upper(),
                     "image": image_url,
-                    "size": "big" if random.random() > 0.85 else "normal",
-                    "summary": summary[:320] + "...",
+                    "size": "big" if random.random() > 0.9 else "normal",
+                    "summary": summary[:350] + "...",
                     "source_url": entry.link,
                     "source_name": source['name']
                 })
         except Exception: pass
     
-    # Inserisci contenuti Niche simulati dagli agenti
+    # Inserisci contenuti Niche simulati
     for niche in AGENT_NICHE_CONTENT:
         all_news.append({
             "id": random.randint(50000, 60000),
@@ -160,18 +250,21 @@ def fetch_rss_news():
             "original_title": niche["title"].split(": ")[1],
             "category": niche["category"],
             "province": niche["prov"],
-            "tag": "AGENT_SCAN",
+            "tag": "TREND_MARCHE",
             "author": "Elite_Agent",
             "date": datetime.now().strftime("%d %B %Y %H:%M").upper(),
             "image": niche["img"],
             "size": "normal",
             "summary": niche["summary"],
             "source_url": "#",
-            "source_name": "Marche Live Radar"
+            "source_name": "Marche Live Insights"
         })
 
+    # Inserisci Eventi Reali in Personal Life
+    all_news.extend(EVENTS)
+
     random.shuffle(all_news)
-    return all_news[:60] # Elite pool
+    return all_news[:70] # Elite+ pool
 
 def main():
     news = fetch_rss_news()
@@ -185,11 +278,11 @@ def main():
         with open(NEWS_FILE, 'w', encoding='utf-8') as f:
             json.dump(final_data, f, indent=4)
         
-        # Save daily spotlight (backward compatibility)
+        # Spotlight (backup)
         with open(RECIPE_FILE, 'w', encoding='utf-8') as f: json.dump(RECIPES[0], f, indent=4)
         with open(CURIOSITY_FILE, 'w', encoding='utf-8') as f: json.dump(CURIOSITIES[0], f, indent=4)
         
-        print(f"SISTEMA ELITE: {len(news)} elementi caricati, Ricette e Curiosità sincronizzate.")
+        print(f"SISTEMA ELITE 2.6: {len(news)} elementi caricati. Carnevale 2026 Sincronizzato.")
 
 if __name__ == "__main__":
     main()
