@@ -1,16 +1,14 @@
 let newsData = [];
-let curiosityData = null;
-let recipeData = null;
+let allRecipes = [];
+let allCuriosities = [];
 let currentCategory = 'all';
 let currentProvince = 'all';
 let activeUpdates = [];
 
-// Funzione principale di caricamento dati
 async function loadAllData() {
-    console.log("🚀 AGENTE: Inizializzazione sistema professionale...");
+    console.log("🚀 AGENTE_ELITE: Inizializzazione sistema...");
 
-    // Verifica versione per pulizia cache (Bumping to 2.4 for professional update)
-    const currentVersion = '2.4';
+    const currentVersion = '2.5';
     if (localStorage.getItem('marche_live_version') !== currentVersion) {
         if ('caches' in window) {
             try {
@@ -21,33 +19,25 @@ async function loadAllData() {
         localStorage.setItem('marche_live_version', currentVersion);
     }
 
-    // Caricamento Notizie (include Lavoro e Sport)
     try {
-        const newsRes = await fetch('news.json');
-        const data = await newsRes.json();
-        newsData = data.articles || data;
-        
+        const res = await fetch('news.json');
+        const data = await res.json();
+        newsData = data.articles || [];
+        allRecipes = data.all_recipes || [];
+        allCuriosities = data.all_curiosities || [];
+
         if (data.last_update) {
-            document.getElementById('js-writing-status').innerHTML = `<span class="status-dot"></span> Radar Sincronizzato - Ultimo Update: ${data.last_update}`;
+            document.getElementById('js-writing-status').innerHTML = `<span class="status-dot"></span> Radar Elite Attivo - Update: ${data.last_update}`;
         }
-        
+
         renderBentoGrid();
-        startAgentScanner(); 
-    } catch (e) { console.warn("Errore news:", e); }
+        startAgentScanner();
 
-    // Caricamento Curiosità
-    try {
-        const curiosityRes = await fetch('curiosity.json');
-        curiosityData = await curiosityRes.json();
-        renderCuriosity();
-    } catch (e) { console.warn("Errore curiosità:", e); }
+        // Spotlight iniziale
+        if (allCuriosities.length > 0) renderCuriosity(allCuriosities[0]);
+        if (allRecipes.length > 0) renderRecipe(allRecipes[0]);
 
-    // Caricamento Ricetta (Autentica)
-    try {
-        const recipeRes = await fetch('recipe.json');
-        recipeData = await recipeRes.json();
-        renderRecipe();
-    } catch (e) { console.warn("Errore ricetta:", e); }
+    } catch (e) { console.warn("Errore sistema:", e); }
 }
 
 function init() {
@@ -63,7 +53,6 @@ function init() {
 }
 
 function setupIntersectionObserver() {
-    const observerOptions = { threshold: 0.1 };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -71,7 +60,7 @@ function setupIntersectionObserver() {
                 entry.target.style.transform = 'translateY(0)';
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
     document.querySelectorAll('.bento-item, .widget-card, .side-panel').forEach(el => {
         el.style.opacity = '0';
@@ -84,39 +73,53 @@ function setupIntersectionObserver() {
 function renderBentoGrid() {
     const grid = document.getElementById('js-bento-grid');
     if (!grid) return;
-    
-    // Filtro Combinato
-    let filtered = newsData;
-    if (currentCategory !== 'all') {
-        filtered = filtered.filter(n => n.category === currentCategory);
-    }
-    if (currentProvince !== 'all') {
-        filtered = filtered.filter(n => n.province === currentProvince || n.province === 'MARCHE');
+
+    // Mostra un effetto "scansione" veloce
+    grid.style.opacity = '0.5';
+    setTimeout(() => grid.style.opacity = '1', 200);
+
+    let displayItems = [];
+
+    // Logica di selezione contenuti per categoria
+    if (currentCategory === 'ricette') {
+        displayItems = allRecipes;
+    } else if (currentCategory === 'curiosita') {
+        displayItems = allCuriosities;
+    } else {
+        displayItems = newsData;
+        if (currentCategory !== 'all') {
+            displayItems = displayItems.filter(n => n.category === currentCategory);
+        }
     }
 
-    if (filtered.length === 0) {
+    // Filtro per Provincia (con fallback MARCHE regionale)
+    if (currentProvince !== 'all') {
+        displayItems = displayItems.filter(n => n.province === currentProvince || n.province === 'MARCHE');
+    }
+
+    if (displayItems.length === 0) {
         grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; color: var(--text-dim);">
             <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;">📡</div>
-            <h3>Nessun aggiornamento radar trovato.</h3>
-            <p>L'agente sta cercando nuovi contenuti per questa categoria/provincia.</p>
+            <h3>Nessun contenuto trovato per questa selezione.</h3>
+            <p>L'agente sta scansionando nuove fonti per aggiornare questa sezione.</p>
         </div>`;
         return;
     }
 
-    grid.innerHTML = filtered.map(news => {
-        const isJob = news.category === 'lavoro';
-        const cardClass = news.size === 'big' || news.size === 'wide' ? 'big-card' : '';
-        const jobStyle = isJob ? 'border: 1px solid var(--accent-blue); background: rgba(59, 130, 246, 0.05);' : '';
-        
+    grid.innerHTML = displayItems.map(item => {
+        const isElite = item.tag === 'ECCELLENZA' || item.tag === 'CURIOSITÀ';
+        const cardClass = item.size === 'big' ? 'big-card' : '';
+        const tagColor = item.category === 'lavoro' ? 'var(--accent-blue)' : (item.category === 'sport' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.2)');
+
         return `
-            <div class="bento-item ${cardClass}" onclick="openArticle(${news.id})" style="${jobStyle}">
-                <img src="${news.image}" class="bento-img" alt="${news.title}">
+            <div class="bento-item ${cardClass}" onclick="openDetail(${item.id}, '${item.category}')">
+                <img src="${item.image}" class="bento-img" alt="${item.title}">
                 <div class="bento-content">
-                    <span class="bento-tag" style="${isJob ? 'background: var(--accent-blue); color: #fff;' : ''}">${news.tag}</span>
-                    <h3 class="bento-title">${news.title}</h3>
+                    <span class="bento-tag" style="background: ${tagColor}; color: #fff;">${item.tag || item.category.toUpperCase()}</span>
+                    <h3 class="bento-title">${item.title}</h3>
                     <div class="bento-footer">
-                        <span class="bento-province">${news.province}</span>
-                        <span class="bento-more">${isJob ? 'DETTAGLI_LAVORO' : 'LEGGI_NOTIZIA'} ↗</span>
+                        <span class="bento-province">${item.province}</span>
+                        <span class="bento-more">SCOPRI_DI_PIÙ ↗</span>
                     </div>
                 </div>
             </div>
@@ -124,125 +127,93 @@ function renderBentoGrid() {
     }).join('');
 }
 
-function renderCuriosity() {
+function openDetail(id, cat) {
+    if (cat === 'ricette') {
+        const item = allRecipes.find(r => r.id === id);
+        if (item) renderFullRecipeModal(item);
+    } else if (cat === 'curiosita') {
+        const item = allCuriosities.find(c => c.id === id);
+        if (item) renderFullCuriosityModal(item);
+    } else {
+        const item = newsData.find(n => n.id === id);
+        if (item) openArticleModal(item);
+    }
+}
+
+function renderCuriosity(data) {
     const container = document.getElementById('js-curiosity-content');
-    if (!container || !curiosityData) return;
+    if (!container) return;
     container.innerHTML = `
-        <div class="curiosity-card">
-            <img src="${curiosityData.img}" alt="${curiosityData.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
-            <h4 style="color: var(--accent-blue); margin-bottom: 10px;">${curiosityData.title}</h4>
-            <p style="font-size: 0.9rem; line-height: 1.5; color: #cbd5e1;">${curiosityData.content}</p>
+        <div class="curiosity-card" onclick="openDetail(${data.id}, 'curiosita')" style="cursor:pointer">
+            <img src="${data.image}" alt="${data.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;">
+            <h4 style="color: var(--accent-blue);">${data.title}</h4>
+            <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 5px;">${data.content.substring(0, 80)}...</p>
         </div>
     `;
 }
 
-function renderRecipe() {
+function renderRecipe(data) {
     const container = document.getElementById('js-recipe-content');
-    if (!container || !recipeData) return;
+    if (!container) return;
     container.innerHTML = `
-        <div class="recipe-card" onclick="openRecipe()" style="cursor: pointer;">
-            <img src="${recipeData.img}" alt="${recipeData.title}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
-            <h4 style="color: #fff;">${recipeData.title}</h4>
-            <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0;">${recipeData.summary}</p>
-            <div style="font-size: 0.75rem; color: var(--accent-gold); font-weight: 600;">🍷 ABBINAMENTO: ${recipeData.wine}</div>
+        <div class="recipe-card" onclick="openDetail(${data.id}, 'ricette')" style="cursor:pointer">
+            <img src="${data.image}" alt="${data.title}" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
+            <h4 style="color: #fff;">${data.title}</h4>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0;">${data.summary}</p>
         </div>
     `;
 }
 
-function renderWeather() {
-    const grid = document.getElementById('js-weather-grid');
-    if (!grid) return;
-    const cities = [
-        { name: "Civitanova", icon: "🌤️", temp: "16°" },
-        { name: "Ancona", icon: "🌧️", temp: "14°" },
-        { name: "Macerata", icon: "⛅", temp: "13°" },
-        { name: "Pesaro", icon: "🌬️", temp: "12°" },
-        { name: "Fermo", icon: "🌤️", temp: "15°" }
-    ];
-    grid.innerHTML = cities.map(c => `
-        <div class="weather-item">
-            <span class="w-name">${c.name}</span>
-            <span class="w-icon">${c.icon}</span>
-            <span class="w-temp">${c.temp}</span>
-        </div>
-    `).join('');
-}
-
-function renderTraffic() {
-    const list = document.getElementById('js-traffic-list');
-    if (!list) return;
-    const alerts = [
-        { road: "A14", text: "Civitanova-Ancona sud: Regolare" },
-        { road: "SS16", text: "Porto Recanati: Traffico intenso" },
-        { road: "Superst. 77", text: "Macerata-Civitanova: Fluido" }
-    ];
-    list.innerHTML = alerts.map(a => `
-        <div class="traffic-item">
-            <span class="t-road">${a.road}</span>
-            <span class="t-text">${a.text}</span>
-        </div>
-    `).join('');
-}
-
-function startTrafficTimer() {
-    let s = 30;
-    setInterval(() => {
-        s = s <= 0 ? 30 : s - 1;
-        const el = document.getElementById('js-traffic-timer');
-        if (el) el.innerText = s + "s";
-    }, 1000);
-}
-
-function openArticle(id) {
-    const news = newsData.find(n => n.id === id);
-    if (!news) return;
-    const isJob = news.category === 'lavoro';
+function openArticleModal(news) {
     const modal = document.getElementById('js-article-modal');
     const content = document.getElementById('js-modal-content');
-    
+    const isJob = news.category === 'lavoro';
+
     content.innerHTML = `
         <img src="${news.image}" alt="${news.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
         <div class="m-body">
-            <span class="bento-tag" style="${isJob ? 'background: var(--accent-blue);' : ''}">${news.tag}</span>
+            <span class="bento-tag" style="background: ${isJob ? 'var(--accent-blue)' : 'rgba(255,255,255,0.1)'}">${news.tag}</span>
             <div style="font-size: 0.8rem; color: #94a3b8; margin: 10px 0;">Fonte: ${news.source_name} | Provincia: ${news.province} | ${news.date}</div>
-            <h2 style="font-size: 2.2rem; margin: 20px 0; color: #fff; line-height: 1.2;">${news.original_title || news.title}</h2>
-            <div class="m-text" style="line-height: 1.8; font-size: 1.1rem; color: #cbd5e1; margin-bottom: 30px;">
-                ${news.summary}
-            </div>
-            <a href="${news.source_url}" target="_blank" class="btn-report" style="display: block; text-align: center; background: var(--accent-blue); color: #fff; text-decoration: none; font-weight: 800; border-radius: 8px; padding: 18px;">
-                ${isJob ? '📄 CANDIDATI ORA / CONTATTA' : '🌐 LEGGI ARTICOLO COMPLETO'}
+            <h2 style="font-size: 2rem; margin: 20px 0; color: #fff;">${news.original_title || news.title}</h2>
+            <div class="m-text" style="line-height: 1.8; font-size: 1.1rem; color: #cbd5e1; margin-bottom: 30px;">${news.summary}</div>
+            <a href="${news.source_url}" target="_blank" class="btn-report" style="display: block; text-align: center; background: var(--accent-blue); color: #fff; font-weight: 800; border-radius: 6px; padding: 15px; text-decoration: none;">
+                ${isJob ? '📄 CANDIDATI / DETTAGLI' : '🌐 LEGGI ARTICOLO COMPLETO'}
             </a>
         </div>
     `;
     modal.classList.add('active');
 }
 
-function openRecipe() {
-    if (!recipeData) return;
+function renderFullRecipeModal(recipe) {
     const modal = document.getElementById('js-article-modal');
     const content = document.getElementById('js-modal-content');
     content.innerHTML = `
-        <img src="${recipeData.img}" alt="${recipeData.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
+        <img src="${recipe.image}" alt="${recipe.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
         <div class="m-body">
-            <span class="bento-tag">ECCELLENZA_MARCHIGIANA</span>
-            <h2 style="font-size: 2.5rem; margin: 20px 0; color: #fff;">${recipeData.title}</h2>
-            <div class="wine-pairing" style="background: rgba(190, 18, 60, 0.1); border: 1px solid #be123c; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
-                <strong style="color: #fb7185; font-size: 1.1rem;">🍷 IL CONSIGLIO DEL SOMMELIER:</strong>
-                <p style="margin-top: 10px; font-size: 1rem; color: #fff; font-weight: 700;">${recipeData.wine}</p>
+            <span class="bento-tag">CUCINA_TRADIZIONALE</span>
+            <h2 style="font-size: 2.5rem; margin: 20px 0; color: #fff;">${recipe.title}</h2>
+            <div style="background: rgba(190, 18, 60, 0.1); border: 1px solid #be123c; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                <strong style="color: #fb7185;">🍷 ABBINAMENTO VINO:</strong> <p style="color: #fff; margin-top: 5px;">${recipe.wine}</p>
             </div>
-            <div class="recipe-ingredients">
-                <h3 style="color: var(--accent-blue); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Cosa ti serve</h3>
-                <ul style="margin: 20px 0; padding-left: 20px; line-height: 2; color: #cbd5e1;">
-                    ${recipeData.ingredients.map(i => `<li>${i}</li>`).join('')}
-                </ul>
-            </div>
-            <div class="recipe-steps">
-                <h3 style="color: var(--accent-blue); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Come procedere</h3>
-                <ol style="margin: 20px 0; padding-left: 20px; line-height: 2; color: #cbd5e1;">
-                    ${recipeData.steps.map(s => `<li>${s}</li>`).join('')}
-                </ol>
-            </div>
-            <button class="btn-report" onclick="window.print()" style="margin-top: 30px; background: #fff; color: #000; width: 100%; border: none; font-weight: 800; border-radius: 8px;">🖨️ STAMPA RICETTA (PDF)</button>
+            <h3 style="color: var(--accent-blue);">Ingredienti</h3>
+            <ul style="color: #cbd5e1; line-height: 2; margin: 15px 0;">${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+            <h3 style="color: var(--accent-blue);">Preparazione</h3>
+            <ol style="color: #cbd5e1; line-height: 2; margin: 15px 0;">${recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+            <button class="btn-report" onclick="window.print()" style="margin-top: 20px; background: #fff; color: #000; width: 100%; border: none; font-weight: 800;">🖨️ STAMPA RICETTA</button>
+        </div>
+    `;
+    modal.classList.add('active');
+}
+
+function renderFullCuriosityModal(cur) {
+    const modal = document.getElementById('js-article-modal');
+    const content = document.getElementById('js-modal-content');
+    content.innerHTML = `
+        <img src="${cur.image}" alt="${cur.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
+        <div class="m-body">
+            <span class="bento-tag">STORIA_E_CURIOSITÀ</span>
+            <h2 style="font-size: 2.22rem; margin: 20px 0; color: #fff;">${cur.title}</h2>
+            <div class="m-text" style="line-height: 2; font-size: 1.2rem; color: #cbd5e1;">${cur.content}</div>
         </div>
     `;
     modal.classList.add('active');
@@ -258,7 +229,7 @@ function setupNav() {
             btn.classList.add('active');
             currentCategory = btn.dataset.category;
             renderBentoGrid();
-            window.scrollTo({ top: document.querySelector('.main-layout-wrapper').offsetTop - 100, behavior: 'smooth' });
+            window.scrollTo({ top: document.querySelector('.main-layout-wrapper').offsetTop - 80, behavior: 'smooth' });
         });
     });
 }
@@ -281,54 +252,72 @@ function setupClock() {
     }, 1000);
 }
 
-function startStatusSimulation() {
-    const statusText = document.getElementById('js-writing-status');
-    if (!statusText) return;
-    const statuses = ["Scansione Ansa...", "Verifica Offerte Lavoro...", "Radar Marche Attivo", "Sincronizzazione Sport..."];
-    let i = 0;
-    setInterval(() => {
-        if (!statusText.innerText.includes("Ultimo Update")) {
-            statusText.innerHTML = `<span class="status-dot"></span> ${statuses[i % statuses.length]}`; 
-            i++;
-        }
-    }, 8000);
+function renderWeather() {
+    const grid = document.getElementById('js-weather-grid');
+    if (!grid) return;
+    const cities = ["Civitanova", "Ancona", "Macerata", "Pesaro", "Fermo"];
+    grid.innerHTML = cities.map(city => `
+        <div class="weather-item">
+            <span class="w-name">${city}</span>
+            <span class="w-icon">${random.random > 0.5 ? '🌤️' : '⛅'}</span>
+            <span class="w-temp">${Math.floor(Math.random() * 6 + 10)}°</span>
+        </div>
+    `).join('');
 }
 
 function startAgentScanner() {
     if (!newsData || newsData.length === 0) return;
-
-    // Mix news and jobs in the ticker
-    activeUpdates = newsData.slice(0, 12).map(n => ({
-        source: n.source_name.toUpperCase(),
-        text: n.original_title,
-        time: n.date.split(' ').pop(),
-        type: n.category
-    }));
-    
+    activeUpdates = newsData.slice(0, 15).map(n => ({ source: n.source_name.toUpperCase(), text: n.original_title, time: n.date.split(' ').pop() }));
     renderRadarTicker();
-
     setInterval(() => {
         const up = newsData[Math.floor(Math.random() * newsData.length)];
         const time = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-        activeUpdates.unshift({ source: up.source_name.toUpperCase(), text: up.original_title, time: time, type: up.category });
-        if (activeUpdates.length > 12) activeUpdates.pop();
+        activeUpdates.unshift({ source: up.source_name.toUpperCase(), text: up.original_title, time: time });
+        if (activeUpdates.length > 15) activeUpdates.pop();
         renderRadarTicker();
-    }, 5000);
+    }, 4500);
 }
 
 function renderRadarTicker() {
     const track = document.getElementById('js-radar-track');
-    if (!track) return;
-    track.innerHTML = activeUpdates.map(up => `
-        <span style="${up.type === 'lavoro' ? 'color: var(--accent-blue);' : ''}">
-            [${up.time}] ${up.source}: ${up.text}
-        </span>
-    `).join('');
+    if (track) track.innerHTML = activeUpdates.map(up => `<span>[${up.time}] ${up.source}: ${up.text}</span>`).join('');
+}
+
+function startTrafficTimer() {
+    let s = 30;
+    setInterval(() => {
+        s = s <= 0 ? 30 : s - 1;
+        const el = document.getElementById('js-traffic-timer');
+        if (el) el.innerText = s + "s";
+    }, 1000);
+}
+
+function startStatusSimulation() {
+    const statusText = document.getElementById('js-writing-status');
+    const statuses = ["Scansione Ansa...", "Verifica Lavoro...", "Radar Marche Elite Attivo"];
+    let i = 0;
+    setInterval(() => {
+        if (statusText && !statusText.innerText.includes("Update")) {
+            statusText.innerHTML = `<span class="status-dot"></span> ${statuses[i % statuses.length]}`;
+            i++;
+        }
+    }, 6000);
+}
+
+function renderTraffic() {
+    const list = document.getElementById('js-traffic-list');
+    if (!list) return;
+    const alerts = [
+        { road: "A14", text: "Porto Sant'Elpidio: Flusso regolare" },
+        { road: "SS16", text: "Falconara: Rallentamenti locali" },
+        { road: "SS77", text: "Civitanova: Traffico intenso" }
+    ];
+    list.innerHTML = alerts.map(a => `<div class="traffic-item"><span class="t-road">${a.road}</span><span class="t-text">${a.text}</span></div>`).join('');
 }
 
 function simulateReport() {
     const topic = prompt("Cosa vuoi segnalare alla redazione?");
-    if (topic) alert("Copia ricevuta. La tua segnalazione è stata inviata al sistema di monitoraggio Marche Live.");
+    if (topic) alert("Report inviato. Grazie per il contributo a Marche Live.");
 }
 
 document.addEventListener('DOMContentLoaded', init);
