@@ -7,14 +7,19 @@
     --bg-dark: #020408;
     --panel-dark: #0a0c10;
     --accent-gold: #fbbf24;
-    --accent-blue: #60a5fa; /* Changed from #38bdf8 */
+    --accent-blue: #60a5fa;
+    /* Changed from #38bdf8 */
     --accent-green: #34d399;
-    --accent-red: #ef4444; /* Added */
-    --text-main: #f8fafc; /* Changed from #f1f5f9 */
+    --accent-red: #ef4444;
+    /* Added */
+    --text-main: #f8fafc;
+    /* Changed from #f1f5f9 */
     --text-dim: #94a3b8;
-    --border: rgba(255, 255, 255, 0.1); /* Changed from #1e293b */
+    --border: rgba(255, 255, 255, 0.1);
+    /* Changed from #1e293b */
     --neon-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-    --glass: rgba(15, 23, 42, 0.7); /* Added */
+    --glass: rgba(15, 23, 42, 0.7);
+    /* Added */
 }
 
 * {
@@ -477,6 +482,11 @@ body.tech-theme {
 .big-card {
     grid-column: span 2;
     grid-row: span 2;
+}
+
+.wide-card {
+    grid-column: span 2;
+    grid-row: span 1;
 }
 
 /* Sidebar Panels */
