@@ -1,19 +1,24 @@
 {
-    "title": "Vincisgrassi alla Maceratese",
-    "summary": "Il 'lasagna' delle Marche. Un piatto ricco, sontuoso, con un rag\u00f9 di carni tagliate al coltello e durelli di pollo.",
+    "id": 8001,
+    "title": "Vincisgrassi Maceratesi",
+    "category": "ricette",
+    "tag": "ECCELLENZA",
+    "province": "MC",
+    "summary": "Il 'lasagna' delle Marche. Un piatto ricco con un rag\u00f9 di carni tagliate al coltello e durelli di pollo.",
     "wine": "Rosso Conero Riserva DOCG",
-    "img": "https://images.unsplash.com/photo-1619895092538-1283417871fa?w=800",
+    "image": "https://images.unsplash.com/photo-1619895092538-1283417871fa?w=800",
     "ingredients": [
         "Pasta all'uovo (12 tuorli)",
         "Manzo e maiale",
         "Fegatini e durelli di pollo",
-        "Besciamella densa",
-        "Parmigiano Reggiano stagionato"
+        "Besciamella",
+        "Parmigiano"
     ],
     "steps": [
-        "Preparare il rag\u00f9 con cotturura lenta (4 ore)",
-        "Sbollentare i fogli di pasta",
-        "Stratificare con abbondante condimento",
-        "Cuocere in forno finch\u00e9 non si forma una crosticina croccante"
-    ]
+        "Preparare il rag\u00f9 (4 ore)",
+        "Sbollentare la pasta",
+        "Stratificare",
+        "Infornare"
+    ],
+    "date": "11 FEB 2026"
 }

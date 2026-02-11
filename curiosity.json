@@ -1,5 +1,10 @@
 {
-    "title": "Ancona: Il Solo Sorgere e Tramontare",
+    "id": 9001,
+    "title": "Ancona: Il Sole tra due Mari",
+    "category": "curiosita",
+    "tag": "CURIOSIT\u00c0",
+    "province": "AN",
     "content": "Ancona \u00e8 l'unica citt\u00e0 adriatica dove si pu\u00f2 vedere il sole sorgere e tramontare sul mare, grazie alla forma a gomito del promontorio del Conero.",
-    "img": "https://images.unsplash.com/photo-1544085311-11a028465b03?w=800"
+    "image": "https://images.unsplash.com/photo-1544085311-11a028465b03?w=800",
+    "date": "11 FEB 2026"
 }
