@@ -56,16 +56,6 @@ CURIOSITIES = [
         "content": "Costruito nel 1828 dentro una grotta, questo tempio ottagonale è un capolavoro del neoclassicismo incastonato nella roccia.", 
         "image": "https://images.unsplash.com/photo-1528114039593-4366cc08227d?w=800",
         "date": datetime.now().strftime("%d %b %Y").upper()
-    },
-    {
-        "id": 9004,
-        "title": "Osimo: La Città Sotterranea", 
-        "category": "curiosita",
-        "tag": "CURIOSITÀ",
-        "province": "AN",
-        "content": "Sotto il centro storico di Osimo si snoda una rete di grotte e cunicoli scavati nell'arenaria, con altorilievi e simboli misteriosi legati ai Cavalieri di Malta.", 
-        "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800",
-        "date": datetime.now().strftime("%d %b %Y").upper()
     }
 ]
 
@@ -95,105 +85,106 @@ RECIPES = [
         "ingredients": ["Olive Ascolane DOP", "Manzo, Maiale e Pollo", "Parmigiano", "Uova", "Pangrattato"],
         "steps": ["Denocciolare a spirale", "Farcire", "Panare", "Friggere"],
         "date": datetime.now().strftime("%d %b %Y").upper()
-    },
-    {
-        "id": 8003,
-        "title": "Brodetto all'Anconetana",
-        "category": "ricette",
-        "tag": "ECCELLENZA",
-        "province": "AN",
-        "summary": "Zuppa di pesce tradizionale con 13 varietà di pescato, pomodoro e pane abbrustolito.",
-        "wine": "Verdicchio dei Castelli di Jesi Classico",
-        "image": "https://images.unsplash.com/photo-1534080564617-38290f6d0f8d?w=800",
-        "ingredients": ["13 tipi di pesce", "Pomodoro", "Pane casereccio", "Olio EVO", "Vino bianco"],
-        "steps": ["Pulire il pesce", "Soffriggere gli odori", "Aggiungere i pesci in ordine", "Servire su pane"],
-        "date": datetime.now().strftime("%d %b %Y").upper()
     }
 ]
 
-# Database Eventi Reali (Febbraio 2026 - Carnevale)
+# Database Eventi Reali - mc_events.2 Sync
 EVENTS = [
     {
         "id": 7001,
-        "title": "CARNEVALE_LIVE: GRAN CARNEVALE AL MUCHACHA",
-        "original_title": "Grande Festa di Carnevale @ Muchacha Assaderia",
+        "title": "GIOVEDÌ_GRASSO: CARNEVALARDO @ MUCHACHA",
+        "original_title": "Grande Carnevale @ Muchacha Assaderia",
         "category": "personal-life",
         "province": "MC",
-        "tag": "EVENTO_LIVE",
-        "author": "Rubinho_Agent",
+        "tag": "EVENTO_TOP",
+        "author": "mc_events.2",
         "date": "12 FEB 2026 21:00",
         "image": "https://images.unsplash.com/photo-1514525253342-b0bb4d7db71f?w=800",
         "size": "big",
-        "summary": "Domani grande appuntamento a Civitanova Marche: il Carnevale esplode al Muchacha Assaderia! Musica, maschere e cena spettacolo per la notte più pazza dell'anno.",
-        "source_url": "#",
-        "source_name": "Redazione Social"
+        "summary": "Il Giovedì Grasso più caldo delle Marche è alla Muchacha Assaderia di Civitanova Marche. Cena spettacolo, maschere e ritmo latino per iniziare il weekend di Carnevale.",
+        "source_url": "https://www.instagram.com/mc_events.2",
+        "source_name": "mc_events.2"
     },
     {
         "id": 7002,
-        "title": "CLUB_RADAR: MC MENOR JP AL DONOMA",
+        "title": "SABATO_ELITE: MC MENOR JP @ DONOMA",
         "original_title": "Mc Menor Jp Live @ Donoma Club",
         "category": "personal-life",
         "province": "MC",
         "tag": "NOTTE_MARCHE",
-        "author": "Nightlife_Agent",
+        "author": "mc_events.2",
         "date": "14 FEB 2026 22:00",
         "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800",
         "size": "normal",
-        "summary": "Il Donoma Club di Civitanova ospita MC Menor Jp per un sabato di Carnevale leggendario. Funk brasiliano e atmosfera elettrica garantita.",
+        "summary": "Direttamente dal Brasile, MC Menor Jp sbarca al Donoma Club di Civitanova per il Sabato di Carnevale. Una notte di funk e pura energia.",
+        "source_url": "https://www.ticketsms.it",
+        "source_name": "TicketSMS / mc_events.2"
+    },
+    {
+        "id": 7003,
+        "title": "VIDALOCA: CARNIVAL PARTY @ BRAHMA",
+        "original_title": "Vidaloca Carnival Party @ Brahma Clubship",
+        "category": "personal-life",
+        "province": "MC",
+        "tag": "CARNEVALE_2026",
+        "author": "mc_events.2",
+        "date": "14 FEB 2026 21:00",
+        "image": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800",
+        "size": "normal",
+        "summary": "Il format più amato d'Italia porta il suo show di Carnevale al Brahma di Civitanova. Reggaeton, Hip Hop e Pop in un'atmosfera incredibile.",
         "source_url": "https://www.ticketsms.it",
         "source_name": "TicketSMS"
     },
     {
-        "id": 7003,
-        "title": "CARNEVALANDO_2026: CRISTINA D'AVENA IN PIAZZA",
-        "original_title": "Cristina D'Avena @ Piazza XX Settembre",
+        "id": 7004,
+        "title": "CARNEVALANDO: CRISTINA D'AVENA @ CIVITANOVA",
+        "original_title": "Cristina D'Avena Live in Piazza XX Settembre",
         "category": "personal-life",
         "province": "MC",
-        "tag": "EVENTO_FAMIGLIA",
-        "author": "City_Agent",
+        "tag": "GRANDE_EVENTO",
+        "author": "Civitanova_Live",
         "date": "15 FEB 2026 17:30",
-        "image": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800",
+        "image": "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800",
         "size": "wide",
-        "summary": "Domenica 15 febbraio Civitanova ospita Carnevalando 2026. L'ospite d'onore sarà Cristina D'Avena per uno show gratuito in Piazza XX Settembre.",
+        "summary": "Domenica 15 febbraio Civitanova ospita la regina delle sigle dei cartoni animati: Cristina D'Avena! Uno show gratuito per tutte le famiglie in centro.",
         "source_url": "https://www.civitanovalive.it",
         "source_name": "Civitanova Live"
     },
     {
-        "id": 7004,
-        "title": "MACERATA_VIVA: 36° CARNEVALE MACERATESE",
-        "original_title": "Sfilata Carri Allegorici @ Giardini Diaz",
+        "id": 7005,
+        "title": "FIERA_ANCONA: GRAN CARNEVALE DORICO",
+        "original_title": "Sfilata Carri @ Corso Amendola Ancona",
+        "category": "personal-life",
+        "province": "AN",
+        "tag": "CARNEVALE",
+        "author": "Ancona_News",
+        "date": "15 FEB 2026 15:00",
+        "image": "https://images.unsplash.com/photo-1547153760-18fc86324498?w=800",
+        "size": "normal",
+        "summary": "Domenica 15 febbraio Ancona si trasforma con carri allegorici e maschere da tutto il territorio. Partenza dallo Stadio Dorico alle 15:00.",
+        "source_url": "https://www.comune.ancona.it",
+        "source_name": "Comune di Ancona"
+    },
+    {
+        "id": 7006,
+        "title": "TRADIZIONE: 36° CARNEVALE MACERATESE",
+        "original_title": "Sfilata Carri @ Giardini Diaz Macerata",
         "category": "personal-life",
         "province": "MC",
         "tag": "TRADIZIONE",
         "author": "Macerata_Agent",
         "date": "15 FEB 2026 14:00",
-        "image": "https://images.unsplash.com/photo-1547153760-18fc86324498?w=800",
-        "size": "normal",
-        "summary": "Torna la grande sfilata di Macerata ai Giardini Diaz: 5 carri allegorici e 7 gruppi mascherati per una domenica indimenticabile.",
-        "source_url": "https://www.cronachemaceratesi.it",
-        "source_name": "Cronache Maceratesi"
-    },
-    {
-        "id": 7005,
-        "title": "ANCONA_FESTA: GRAN CARNEVALE DORICO",
-        "original_title": "Sfilata in Maschera @ Corso Amendola",
-        "category": "personal-life",
-        "province": "AN",
-        "tag": "GRAN_CARNEVALE",
-        "author": "Ancona_Agent",
-        "date": "15 FEB 2026 15:00",
         "image": "https://images.unsplash.com/photo-1520110323062-f949826f0f6c?w=800",
         "size": "normal",
-        "summary": "Domenica 15 febbraio Ancona si maschera: sfilata da Stadio Dorico a Piazza Cavour percorrendo Corso Amendola. Oltre mille figuranti attesi.",
-        "source_url": "https://www.comune.ancona.it",
-        "source_name": "Comune di Ancona"
+        "summary": "Torna la grande storia del Carnevale di Macerata. Carri, musica e divertimento ai Giardini Diaz per l'evento più atteso della provincia.",
+        "source_url": "https://www.cronachemaceratesi.it",
+        "source_name": "Cronache Maceratesi"
     }
 ]
 
-# Simulated Agents Content for missing niches (Elite engagement)
+# Simulated Agents Content (Elite engagement)
 AGENT_NICHE_CONTENT = [
     {"category": "estetica", "title": "BEAUTY_RADAR: Tendenze Skincare 2026 nelle Marche", "summary": "I centri benessere di Civitanova e Senigallia lanciano i nuovi trattamenti bio-tecnologici basati su attivi locali.", "img": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800", "prov": "MC"},
-    {"category": "moda", "title": "FASHION_WEEK_MARCHE: Il distretto calzaturiero si rinnova", "summary": "Da Fermo a Civitanova, le eccellenze della scarpa puntano sull'eco-sostenibilità e design digitale.", "img": "https://images.unsplash.com/photo-1539109132304-39155024040c?w=800", "prov": "FM"},
     {"category": "tecnologia", "title": "TECH_REPORT: Startup anconetane conquistano il Web3", "summary": "Nuovo round di investimenti per l'intelligenza artificiale applicata all'industria marchigiana.", "img": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", "prov": "AN"}
 ]
 
@@ -201,7 +192,6 @@ def categorize_news(title, summary):
     text = (title + " " + summary).lower()
     if any(k in text for k in ["calcio", "basket", "volley", "derby", "vince", "sconfitta", "partita", "gol", "sport"]): return "sport"
     if any(k in text for k in ["lavoro", "concorso", "assunzioni", "cercasi", "impiego", "assunzione"]): return "lavoro"
-    if any(k in text for k in ["tecnologia", "hi-tech", "internet", "startup", "innovazione", "digitale"]): return "tecnologia"
     if any(k in text for k in ["moda", "fashion", "abbigliamento", "scarpe", "calzature", "sfilata"]): return "moda"
     if any(k in text for k in ["estetica", "bellezza", "beauty", "benessere", "trattamento", "crema"]): return "estetica"
     return "cronaca"
@@ -264,7 +254,7 @@ def fetch_rss_news():
     all_news.extend(EVENTS)
 
     random.shuffle(all_news)
-    return all_news[:70] # Elite+ pool
+    return all_news[:75] # Elite+ pool
 
 def main():
     news = fetch_rss_news()
@@ -277,12 +267,7 @@ def main():
         }
         with open(NEWS_FILE, 'w', encoding='utf-8') as f:
             json.dump(final_data, f, indent=4)
-        
-        # Spotlight (backup)
-        with open(RECIPE_FILE, 'w', encoding='utf-8') as f: json.dump(RECIPES[0], f, indent=4)
-        with open(CURIOSITY_FILE, 'w', encoding='utf-8') as f: json.dump(CURIOSITIES[0], f, indent=4)
-        
-        print(f"SISTEMA ELITE 2.6: {len(news)} elementi caricati. Carnevale 2026 Sincronizzato.")
+        print(f"SISTEMA ELITE 2.6: {len(news)} elementi caricati. Carnevale 2026 Sincronizzato con mc_events.2.")
 
 if __name__ == "__main__":
     main()
