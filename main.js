@@ -136,7 +136,13 @@ function openDetail(id, cat) {
         if (item) renderFullCuriosityModal(item);
     } else {
         const item = newsData.find(n => n.id === id);
-        if (item) openArticleModal(item);
+        if (item) {
+            if (item.redirect) {
+                window.open(item.source_url, '_blank');
+            } else {
+                openArticleModal(item);
+            }
+        }
     }
 }
 

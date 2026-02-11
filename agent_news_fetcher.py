@@ -68,11 +68,12 @@ SPECIAL_PROMOS = [
         "tag": "EVENTO_TOP_MARCHE",
         "author": "Rubinho_Elite",
         "date": "12 FEB 20:30",
-        "image": "muchacha_event.jpg", # Nota: l'utente deve salvare l'immagine con questo nome
+        "image": "./muchacha_event.jpg", # Nota: l'utente deve salvare l'immagine con questo nome nella root
         "size": "big",
         "summary": "🎭 Giovedì 12 Febbraio – Carnevale alla Churrascaria Muchacha. Cena & Dopocena con DJ set. Menù donna: 20€. Lungomare Sergio Piermanni 13, Civitanova Marche. 📞 0733 1826409. Siete tutti invitati! Maschere, musica e vibes 🔥",
-        "source_url": "#",
-        "source_name": "Muchacha Official",
+        "source_url": "https://www.instagram.com/muchacha_asaderia?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+        "source_name": "Muchacha Instagram",
+        "redirect": True,
         "expires": "2026-02-13 09:00" # Formato: YYYY-MM-DD HH:MM
     }
 ]
