@@ -3,23 +3,24 @@ let curiosityData = null;
 let recipeData = null;
 
 async function loadAllData() {
+    console.log("🚀 AGENTE: Inizializzazione sistema dinamico...");
     try {
-        const [newsRes, curiosityRes, recipeRes] = await Promise.all([
-            fetch('news.json'),
-            fetch('curiosity.json'),
-            fetch('recipe.json')
-        ]);
-        
+        const newsRes = await fetch('news.json');
         newsData = await newsRes.json();
-        curiosityData = await curiosityRes.json();
-        recipeData = await recipeRes.json();
-        
         renderBentoGrid();
+    } catch (e) { console.warn("Errore news:", e); }
+
+    try {
+        const curiosityRes = await fetch('curiosity.json');
+        curiosityData = await curiosityRes.json();
         renderCuriosity();
+    } catch (e) { console.warn("Errore curiosità:", e); }
+
+    try {
+        const recipeRes = await fetch('recipe.json');
+        recipeData = await recipeRes.json();
         renderRecipe();
-    } catch (error) {
-        console.error('Errore nel caricamento dati:', error);
-    }
+    } catch (e) { console.warn("Errore ricetta:", e); }
 }
 
 const agentUpdates = [
