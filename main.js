@@ -4,6 +4,18 @@ let recipeData = null;
 
 async function loadAllData() {
     console.log("🚀 AGENTE: Inizializzazione sistema dinamico...");
+
+    // Forza la pulizia della cache per passare alla v2.1
+    if (localStorage.getItem('marche_live_version') !== '2.1') {
+        if ('caches' in window) {
+            try {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(key => caches.delete(key)));
+            } catch (e) { console.log("Cache clear skip"); }
+        }
+        localStorage.setItem('marche_live_version', '2.1');
+    }
+
     try {
         const newsRes = await fetch('news.json');
         newsData = await newsRes.json();
