@@ -259,7 +259,7 @@ function renderWeather() {
     grid.innerHTML = cities.map(city => `
         <div class="weather-item">
             <span class="w-name">${city}</span>
-            <span class="w-icon">${random.random > 0.5 ? '🌤️' : '⛅'}</span>
+            <span class="w-icon">${Math.random() > 0.5 ? '🌤️' : '⛅'}</span>
             <span class="w-temp">${Math.floor(Math.random() * 6 + 10)}°</span>
         </div>
     `).join('');
