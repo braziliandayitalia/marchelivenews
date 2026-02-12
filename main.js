@@ -62,7 +62,7 @@ function setupIntersectionObserver() {
         });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.bento-item, .widget-card, .side-panel').forEach(el => {
+    document.querySelectorAll('.bento-item, .widget-card, .side-panel, .job-hub-premium').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
         el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -97,6 +97,20 @@ function renderBentoGrid() {
         displayItems = displayItems.filter(n => n.province === currentProvince || n.province === 'MARCHE');
     }
 
+    // Hub Lavoro Management
+    const hub = document.getElementById('js-job-hub');
+    const bentoWrapper = document.querySelector('.content-section');
+
+    if (currentCategory === 'lavoro') {
+        hub.style.display = 'block';
+        bentoWrapper.style.display = 'none'; // Nascondiamo la bento grid per far spazio all'hub professionale
+        renderJobHub();
+        return;
+    } else {
+        hub.style.display = 'none';
+        bentoWrapper.style.display = 'block';
+    }
+
     if (displayItems.length === 0) {
         grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; color: var(--text-dim);">
             <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;">📡</div>
@@ -129,6 +143,35 @@ function renderBentoGrid() {
             </div>
         `;
     }).join('');
+}
+
+function renderJobHub() {
+    const hubList = document.getElementById('js-job-list');
+    const jobStats = document.getElementById('js-job-stats');
+    if (!hubList) return;
+
+    const jobs = newsData.filter(n => n.category === 'lavoro');
+
+    // Filtro per provincia anche nell'hub
+    const filteredJobs = currentProvince === 'all'
+        ? jobs
+        : jobs.filter(j => j.province === currentProvince || j.province === 'MARCHE');
+
+    jobStats.innerText = `${filteredJobs.length} Opportunità nelle Marche trovate`;
+
+    hubList.innerHTML = filteredJobs.map(job => `
+        <div class="job-card-mini" onclick="openDetail(${job.id}, 'lavoro')">
+            <div class="job-card-top">
+                <span class="job-card-company">${job.source_name}</span>
+                <span class="job-card-date">${job.date.split(' ').slice(0, 3).join(' ')}</span>
+            </div>
+            <h3 class="job-card-title">${job.original_title || job.title}</h3>
+            <div class="job-card-footer">
+                <span class="job-card-loc">📍 ${job.province}</span>
+                <button class="btn-apply-mini">DETTAGLI</button>
+            </div>
+        </div>
+    `).join('');
 }
 
 function openDetail(id, cat) {

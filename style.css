@@ -19,7 +19,8 @@
     /* Changed from #1e293b */
     --neon-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
     --glass: rgba(15, 23, 42, 0.7);
-    /* Added */
+    --job-bg: #0f172a;
+    --job-accent: #10b981;
 }
 
 * {
@@ -509,6 +510,156 @@ body.tech-theme {
 .wide-card {
     grid-column: span 2;
     grid-row: span 1;
+}
+
+/* 🎯 HUB LAVORO PREMIUM */
+.job-hub-premium {
+    margin-bottom: 40px;
+    background: var(--job-bg);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    animation: slideInUp 0.8s ease-out;
+}
+
+.hub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 20px;
+}
+
+.hub-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.hub-badge {
+    font-size: 0.6rem;
+    background: var(--job-accent);
+    color: #000;
+    padding: 3px 8px;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+#js-job-stats {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--job-accent);
+}
+
+.job-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.job-card-mini {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.job-card-mini:hover {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: var(--job-accent);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.2);
+}
+
+.job-card-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.job-card-company {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--job-accent);
+    text-transform: uppercase;
+}
+
+.job-card-date {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+}
+
+.job-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.job-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.job-card-loc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.btn-apply-mini {
+    background: transparent;
+    border: 1px solid var(--job-accent);
+    color: var(--job-accent);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    font-family: 'JetBrains Mono';
+    transition: all 0.2s;
+}
+
+.job-card-mini:hover .btn-apply-mini {
+    background: var(--job-accent);
+    color: #000;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .hub-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .job-cards-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Sidebar Panels */
