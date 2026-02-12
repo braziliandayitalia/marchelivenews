@@ -108,18 +108,22 @@ function renderBentoGrid() {
 
     grid.innerHTML = displayItems.map(item => {
         const isElite = item.tag === 'ECCELLENZA' || item.tag === 'CURIOSITÀ';
+        const isLavoro = item.category === 'lavoro';
         const cardClass = item.size === 'big' ? 'big-card' : '';
-        const tagColor = item.category === 'lavoro' ? 'var(--accent-blue)' : (item.category === 'sport' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.2)');
+        const lavoroClass = isLavoro ? 'card-lavoro' : '';
+        const tagColor = isLavoro ? '#10b981' : (item.category === 'sport' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.2)');
 
         return `
-            <div class="bento-item ${cardClass}" onclick="openDetail(${item.id}, '${item.category}')">
+            <div class="bento-item ${cardClass} ${lavoroClass}" onclick="openDetail(${item.id}, '${item.category}')">
                 <img src="${item.image}" class="bento-img" alt="${item.title}">
                 <div class="bento-content">
-                    <span class="bento-tag" style="background: ${tagColor}; color: #fff;">${item.tag || item.category.toUpperCase()}</span>
+                    <span class="bento-tag" style="background: ${tagColor}; color: #fff;">
+                        ${isLavoro ? '💼 ' : ''}${item.tag || item.category.toUpperCase()}
+                    </span>
                     <h3 class="bento-title">${item.title}</h3>
                     <div class="bento-footer">
                         <span class="bento-province">${item.province}</span>
-                        <span class="bento-more">SCOPRI_DI_PIÙ ↗</span>
+                        <span class="bento-more">${isLavoro ? 'VEDI_OFFERTA' : 'SCOPRI_DI_PIÙ'} ↗</span>
                     </div>
                 </div>
             </div>

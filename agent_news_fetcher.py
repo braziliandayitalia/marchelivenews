@@ -18,7 +18,14 @@ RSS_SOURCES = [
     {"name": "Regione Marche News", "url": "https://www.regione.marche.it/News-ed-Eventi?rss=1"},
     {"name": "Marche Sport", "url": "https://www.marchesport.info/feed/"},
     {"name": "YouTVRS", "url": "https://youtvrs.it/feed/"},
-    {"name": "Picchio News", "url": "https://picchionews.it/feed/"}
+    {"name": "Picchio News", "url": "https://picchionews.it/feed/"},
+    # Sezione Lavoro - Fonti Dedicate
+    {"name": "Vivere Ancona Lavoro", "url": "https://www.vivereancona.it/rss/lavoro.xml"},
+    {"name": "Vivere Macerata Lavoro", "url": "https://www.viveremacerata.it/rss/lavoro.xml"},
+    {"name": "Vivere Civitanova Lavoro", "url": "https://www.viverecivitanova.it/rss/lavoro.xml"},
+    {"name": "Vivere Pesaro Lavoro", "url": "https://www.viverepesaro.it/rss/lavoro.xml"},
+    {"name": "Vivere Fano Lavoro", "url": "https://www.viverefano.it/rss/lavoro.xml"},
+    {"name": "CercoLavoro Marche", "url": "https://www.cercolavoro.com/rss/lavoro-marche.xml"}
 ]
 
 # Database Immagini Elite (per evitare ripetizioni)
@@ -147,10 +154,11 @@ EVENTS = [
 
 def categorize_news(title, summary):
     text = (title + " " + summary).lower()
-    if any(k in text for k in ["calcio", "basket", "volley", "derby", "gol", "partita", "sport"]): return "sport"
-    if any(k in text for k in ["lavoro", "concorso", "assunzioni", "impiego"]): return "lavoro"
-    if any(k in text for k in ["moda", "fashion", "abbigliamento"]): return "moda"
-    if any(k in text for k in ["estetica", "beauty", "trucco", "trattamento"]): return "estetica"
+    # Parole chiave Job Board potenziate
+    if any(k in text for k in ["lavoro", "concorso", "assunzioni", "impiego", "cercasi", "offresi", "posto di lavoro", "hr ", "recruiting"]): return "lavoro"
+    if any(k in text for k in ["calcio", "basket", "volley", "derby", "gol", "partita", "sport", "serie a", "serie b", "serie c"]): return "sport"
+    if any(k in text for k in ["moda", "fashion", "abbigliamento", "boutique", "sfilata"]): return "moda"
+    if any(k in text for k in ["estetica", "beauty", "trucco", "trattamento", "spa", "benessere"]): return "estetica"
     return "cronaca"
 
 def get_smart_image(cat, count):
@@ -210,8 +218,14 @@ def fetch_rss_news():
         except Exception: pass
     
     all_news.extend(EVENTS)
-    random.shuffle(all_news)
-    return all_news[:75]
+    # Ordina: Prima le news di "LAVORO" più recenti, poi il resto casuale
+    lavoro_news = [n for n in all_news if n['category'] == 'lavoro']
+    other_news = [n for n in all_news if n['category'] != 'lavoro']
+    
+    random.shuffle(other_news)
+    final_list = lavoro_news + other_news
+    
+    return final_list[:100] # Aumentato limite a 100 per ospitare più offerte
 
 def main():
     news = fetch_rss_news()
