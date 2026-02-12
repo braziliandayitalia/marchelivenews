@@ -6,11 +6,11 @@ let currentProvince = 'all';
 let activeUpdates = [];
 
 const RADIO_STATIONS = [
-    { name: "RADIO SUBASIO (HIT/POP)", url: "https://subasioradio.fast-real.com/subasio.mp3", freq: 15 },
-    { name: "RADIO ARANCIA (MARCHE NEWS)", url: "http://icecast.fluidstream.it/radioarancia.mp3", freq: 35 },
-    { name: "RADIO LINEA n.1 (VIBES)", url: "http://icecast.fluidstream.it/radiolinea.mp3", freq: 55 },
-    { name: "RADIO VERONICA (VINTAGE)", url: "http://fm1.radioveronica.it:8000/stream", freq: 75 },
-    { name: "RADIO 24 (TALK/NEWSPAPER)", url: "https://shoutcast.radio24.it:8000/listen.mp3", freq: 90 }
+    { name: "RADIO SUBASIO", url: "https://icy.unitedradio.it/Subasio.mp3" },
+    { name: "RADIO ARANCIA", url: "http://icecast.fluidstream.it/radioarancia.mp3" },
+    { name: "RADIO LINEA n.1", url: "http://stream.radiolinea.it/radiolinea.mp3" },
+    { name: "RADIO VERONICA", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
+    { name: "RADIO 24", url: "https://shoutcast.radio24.it:8000/stream" }
 ];
 let currentStationIndex = 0;
 let isRadioMuted = false;
@@ -19,7 +19,7 @@ let lastRadioVol = 0.5;
 async function loadAllData() {
     console.log("🚀 AGENTE_ELITE: Inizializzazione sistema...");
 
-    const currentVersion = '2.6';
+    const currentVersion = '2.7';
     if (localStorage.getItem('marche_live_version') !== currentVersion) {
         if ('caches' in window) {
             try {
@@ -38,7 +38,8 @@ async function loadAllData() {
         allCuriosities = data.all_curiosities || [];
 
         if (data.last_update) {
-            document.getElementById('js-writing-status').innerHTML = `<span class="status-dot"></span> Radar Elite Attivo - Update: ${data.last_update}`;
+            const statusEl = document.getElementById('js-writing-status');
+            if (statusEl) statusEl.innerHTML = `<span class="status-dot"></span> Radar Elite Attivo - Update: ${data.last_update}`;
         }
 
         renderBentoGrid();
@@ -61,7 +62,7 @@ function init() {
     startStatusSimulation();
     startTrafficTimer();
     setupIntersectionObserver();
-    initVintageRadio();
+    initEliteRadio();
 }
 
 function setupIntersectionObserver() {
@@ -86,13 +87,8 @@ function renderBentoGrid() {
     const grid = document.getElementById('js-bento-grid');
     if (!grid) return;
 
-    // Mostra un effetto "scansione" veloce
-    grid.style.opacity = '0.5';
-    setTimeout(() => grid.style.opacity = '1', 200);
-
     let displayItems = [];
 
-    // Logica di selezione contenuti per categoria
     if (currentCategory === 'ricette') {
         displayItems = allRecipes;
     } else if (currentCategory === 'curiosita') {
@@ -100,50 +96,36 @@ function renderBentoGrid() {
     } else {
         displayItems = newsData;
         if (currentCategory === 'all') {
-            // Escludiamo il lavoro dalla home per renderlo esclusivo
             displayItems = displayItems.filter(n => n.category !== 'lavoro');
         } else {
             displayItems = displayItems.filter(n => n.category === currentCategory);
         }
     }
 
-    // Filtro per Provincia (con fallback MARCHE regionale)
     if (currentProvince !== 'all') {
         displayItems = displayItems.filter(n => n.province === currentProvince || n.province === 'MARCHE');
     }
 
-    // Hub Lavoro Management
     const hub = document.getElementById('js-job-hub');
     const bentoWrapper = document.querySelector('.content-section');
 
     if (currentCategory === 'lavoro') {
-        hub.style.display = 'block';
-        bentoWrapper.style.display = 'none'; // Nascondiamo la bento grid per far spazio all'hub professionale
+        if (hub) hub.style.display = 'block';
+        if (bentoWrapper) bentoWrapper.style.display = 'none';
         renderJobHub();
         return;
     } else {
-        hub.style.display = 'none';
-        bentoWrapper.style.display = 'block';
-    }
-
-    if (displayItems.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; color: var(--text-dim);">
-            <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;">📡</div>
-            <h3>Nessun contenuto trovato per questa selezione.</h3>
-            <p>L'agente sta scansionando nuove fonti per aggiornare questa sezione.</p>
-        </div>`;
-        return;
+        if (hub) hub.style.display = 'none';
+        if (bentoWrapper) bentoWrapper.style.display = 'block';
     }
 
     grid.innerHTML = displayItems.map(item => {
-        const isElite = item.tag === 'ECCELLENZA' || item.tag === 'CURIOSITÀ';
         const isLavoro = item.category === 'lavoro';
         const cardClass = item.size === 'big' ? 'big-card' : '';
-        const lavoroClass = isLavoro ? 'card-lavoro' : '';
         const tagColor = isLavoro ? '#10b981' : (item.category === 'sport' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.2)');
 
         return `
-            <div class="bento-item ${cardClass} ${lavoroClass}" onclick="openDetail(${item.id}, '${item.category}')">
+            <div class="bento-item ${cardClass}" onclick="openDetail(${item.id}, '${item.category}')">
                 <img src="${item.image}" class="bento-img" alt="${item.title}">
                 <div class="bento-content">
                     <span class="bento-tag" style="background: ${tagColor}; color: #fff;">
@@ -152,7 +134,7 @@ function renderBentoGrid() {
                     <h3 class="bento-title">${item.title}</h3>
                     <div class="bento-footer">
                         <span class="bento-province">${item.province}</span>
-                        <span class="bento-more">${isLavoro ? 'VEDI_OFFERTA' : 'SCOPRI_DI_PIÙ'} ↗</span>
+                        <span class="bento-more">APRI ↗</span>
                     </div>
                 </div>
             </div>
@@ -166,24 +148,18 @@ function renderJobHub() {
     if (!hubList) return;
 
     const jobs = newsData.filter(n => n.category === 'lavoro');
+    const filteredJobs = currentProvince === 'all' ? jobs : jobs.filter(j => j.province === currentProvince || j.province === 'MARCHE');
 
-    // Filtro per provincia anche nell'hub
-    const filteredJobs = currentProvince === 'all'
-        ? jobs
-        : jobs.filter(j => j.province === currentProvince || j.province === 'MARCHE');
-
-    jobStats.innerText = `${filteredJobs.length} Opportunità nelle Marche trovate`;
+    if (jobStats) jobStats.innerText = `${filteredJobs.length} Opportunità trovate`;
 
     hubList.innerHTML = filteredJobs.map(job => `
         <div class="job-card-mini" onclick="openDetail(${job.id}, 'lavoro')">
             <div class="job-card-top">
                 <span class="job-card-company">${job.source_name}</span>
-                <span class="job-card-date">${job.date.split(' ').slice(0, 3).join(' ')}</span>
             </div>
             <h3 class="job-card-title">${job.original_title || job.title}</h3>
             <div class="job-card-footer">
                 <span class="job-card-loc">📍 ${job.province}</span>
-                <button class="btn-apply-mini">DETTAGLI</button>
             </div>
         </div>
     `).join('');
@@ -198,90 +174,21 @@ function openDetail(id, cat) {
         if (item) renderFullCuriosityModal(item);
     } else {
         const item = newsData.find(n => n.id === id);
-        if (item) {
-            if (item.redirect) {
-                window.open(item.source_url, '_blank');
-            } else {
-                openArticleModal(item);
-            }
-        }
+        if (item) openArticleModal(item);
     }
-}
-
-function renderCuriosity(data) {
-    const container = document.getElementById('js-curiosity-content');
-    if (!container) return;
-    container.innerHTML = `
-        <div class="curiosity-card" onclick="openDetail(${data.id}, 'curiosita')" style="cursor:pointer">
-            <img src="${data.image}" alt="${data.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;">
-            <h4 style="color: var(--accent-blue);">${data.title}</h4>
-            <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 5px;">${data.content.substring(0, 80)}...</p>
-        </div>
-    `;
-}
-
-function renderRecipe(data) {
-    const container = document.getElementById('js-recipe-content');
-    if (!container) return;
-    container.innerHTML = `
-        <div class="recipe-card" onclick="openDetail(${data.id}, 'ricette')" style="cursor:pointer">
-            <img src="${data.image}" alt="${data.title}" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
-            <h4 style="color: #fff;">${data.title}</h4>
-            <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0;">${data.summary}</p>
-        </div>
-    `;
 }
 
 function openArticleModal(news) {
     const modal = document.getElementById('js-article-modal');
     const content = document.getElementById('js-modal-content');
-    const isJob = news.category === 'lavoro';
+    if (!modal || !content) return;
 
     content.innerHTML = `
         <img src="${news.image}" alt="${news.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
         <div class="m-body">
-            <span class="bento-tag" style="background: ${isJob ? 'var(--accent-blue)' : 'rgba(255,255,255,0.1)'}">${news.tag}</span>
-            <div style="font-size: 0.8rem; color: #94a3b8; margin: 10px 0;">Fonte: ${news.source_name} | Provincia: ${news.province} | ${news.date}</div>
-            <h2 style="font-size: 2rem; margin: 20px 0; color: #fff;">${news.original_title || news.title}</h2>
-            <div class="m-text" style="line-height: 1.8; font-size: 1.1rem; color: #cbd5e1; margin-bottom: 30px;">${news.summary}</div>
-            <a href="${news.source_url}" target="_blank" class="btn-report" style="display: block; text-align: center; background: var(--accent-blue); color: #fff; font-weight: 800; border-radius: 6px; padding: 15px; text-decoration: none;">
-                ${isJob ? '📄 CANDIDATI / DETTAGLI' : '🌐 LEGGI ARTICOLO COMPLETO'}
-            </a>
-        </div>
-    `;
-    modal.classList.add('active');
-}
-
-function renderFullRecipeModal(recipe) {
-    const modal = document.getElementById('js-article-modal');
-    const content = document.getElementById('js-modal-content');
-    content.innerHTML = `
-        <img src="${recipe.image}" alt="${recipe.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
-        <div class="m-body">
-            <span class="bento-tag">CUCINA_TRADIZIONALE</span>
-            <h2 style="font-size: 2.5rem; margin: 20px 0; color: #fff;">${recipe.title}</h2>
-            <div style="background: rgba(190, 18, 60, 0.1); border: 1px solid #be123c; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
-                <strong style="color: #fb7185;">🍷 ABBINAMENTO VINO:</strong> <p style="color: #fff; margin-top: 5px;">${recipe.wine}</p>
-            </div>
-            <h3 style="color: var(--accent-blue);">Ingredienti</h3>
-            <ul style="color: #cbd5e1; line-height: 2; margin: 15px 0;">${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
-            <h3 style="color: var(--accent-blue);">Preparazione</h3>
-            <ol style="color: #cbd5e1; line-height: 2; margin: 15px 0;">${recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
-            <button class="btn-report" onclick="window.print()" style="margin-top: 20px; background: #fff; color: #000; width: 100%; border: none; font-weight: 800;">🖨️ STAMPA RICETTA</button>
-        </div>
-    `;
-    modal.classList.add('active');
-}
-
-function renderFullCuriosityModal(cur) {
-    const modal = document.getElementById('js-article-modal');
-    const content = document.getElementById('js-modal-content');
-    content.innerHTML = `
-        <img src="${cur.image}" alt="${cur.title}" style="max-height: 400px; width: 100%; object-fit: cover;">
-        <div class="m-body">
-            <span class="bento-tag">STORIA_E_CURIOSITÀ</span>
-            <h2 style="font-size: 2.22rem; margin: 20px 0; color: #fff;">${cur.title}</h2>
-            <div class="m-text" style="line-height: 2; font-size: 1.2rem; color: #cbd5e1;">${cur.content}</div>
+            <h2 style="color: #fff; margin: 20px 0;">${news.original_title || news.title}</h2>
+            <p style="color: #cbd5e1; line-height: 1.8;">${news.summary}</p>
+            <a href="${news.source_url}" target="_blank" class="btn-report" style="display: block; text-align: center; margin-top: 20px; background: var(--job-accent); color: #000; text-decoration: none; padding: 15px; border-radius: 6px; font-weight: 800;">VISITA FONTE</a>
         </div>
     `;
     modal.classList.add('active');
@@ -297,7 +204,6 @@ function setupNav() {
             btn.classList.add('active');
             currentCategory = btn.dataset.category;
             renderBentoGrid();
-            window.scrollTo({ top: document.querySelector('.main-layout-wrapper').offsetTop - 80, behavior: 'smooth' });
         });
     });
 }
@@ -309,6 +215,7 @@ function setupProvinceFilter() {
             chip.classList.add('active');
             currentProvince = chip.dataset.province;
             renderBentoGrid();
+            renderJobHub();
         });
     });
 }
@@ -316,36 +223,27 @@ function setupProvinceFilter() {
 function setupClock() {
     setInterval(() => {
         const el = document.getElementById('js-clock');
-        if (el) el.innerText = new Date().toLocaleTimeString('it-IT', { hour12: false });
+        if (el) el.innerText = new Date().toLocaleTimeString('it-IT');
     }, 1000);
 }
 
 function renderWeather() {
     const grid = document.getElementById('js-weather-grid');
     if (!grid) return;
-    const cities = ["Civitanova", "Ancona", "Macerata", "Pesaro", "Fermo"];
+    const cities = ["Ancona", "Civitanova", "Macerata", "Pesaro", "Fermo"];
     grid.innerHTML = cities.map(city => `
         <div class="weather-item">
             <span class="w-name">${city}</span>
-            <span class="w-icon">${Math.random() > 0.5 ? '🌤️' : '⛅'}</span>
-            <span class="w-temp">${Math.floor(Math.random() * 6 + 10)}°</span>
+            <span class="w-temp">${Math.floor(Math.random() * 5 + 10)}°</span>
         </div>
     `).join('');
 }
 
 function startAgentScanner() {
-    if (!newsData || newsData.length === 0) return;
-    // Escludiamo il lavoro dal radar ticker in home
+    if (!newsData.length) return;
     const radarPool = newsData.filter(n => n.category !== 'lavoro');
     activeUpdates = radarPool.slice(0, 15).map(n => ({ source: n.source_name.toUpperCase(), text: n.original_title, time: n.date.split(' ').pop() }));
     renderRadarTicker();
-    setInterval(() => {
-        const up = radarPool[Math.floor(Math.random() * radarPool.length)];
-        const time = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-        activeUpdates.unshift({ source: up.source_name.toUpperCase(), text: up.original_title, time: time });
-        if (activeUpdates.length > 15) activeUpdates.pop();
-        renderRadarTicker();
-    }, 4500);
 }
 
 function renderRadarTicker() {
@@ -364,7 +262,7 @@ function startTrafficTimer() {
 
 function startStatusSimulation() {
     const statusText = document.getElementById('js-writing-status');
-    const statuses = ["Scansione Ansa...", "Verifica Lavoro...", "Radar Marche Elite Attivo"];
+    const statuses = ["Scansione Ansa...", "Verifica Lavoro...", "Radar Elite Attivo"];
     let i = 0;
     setInterval(() => {
         if (statusText && !statusText.innerText.includes("Update")) {
@@ -378,58 +276,48 @@ function renderTraffic() {
     const list = document.getElementById('js-traffic-list');
     if (!list) return;
     const alerts = [
-        { road: "A14", text: "Porto Sant'Elpidio: Flusso regolare" },
-        { road: "SS16", text: "Falconara: Rallentamenti locali" },
-        { road: "SS77", text: "Civitanova: Traffico intenso" }
+        { road: "A14", text: "Porto S.Elpidio: OK" },
+        { road: "SS16", text: "Falconara: Rallentamenti" },
+        { road: "SS77", text: "Civitanova: Intenso" }
     ];
-    list.innerHTML = alerts.map(a => `<div class="traffic-item"><span class="t-road">${a.road}</span><span class="t-text">${a.text}</span></div>`).join('');
+    list.innerHTML = alerts.map(a => `<div class="traffic-item"><span class="t-road">${a.road}</span>: ${a.text}</div>`).join('');
 }
 
-function simulateReport() {
-    const topic = prompt("Cosa vuoi segnalare alla redazione?");
-    if (topic) alert("Report inviato. Grazie per il contributo a Marche Live.");
-}
-
-document.addEventListener('DOMContentLoaded', init);
-
-// 📻 RADIOLINA VINTAGE LOGIC
-function initVintageRadio() {
+// 📻 ELITE RADIO MINI LOGIC
+function initEliteRadio() {
     const audio = document.getElementById('js-radio-audio');
     const playBtn = document.getElementById('js-radio-play');
     const prevBtn = document.getElementById('js-radio-prev');
     const nextBtn = document.getElementById('js-radio-next');
-    const volSlider = document.getElementById('js-radio-vol');
     const muteBtn = document.getElementById('js-radio-mute');
     const stationLabel = document.getElementById('js-radio-station');
-    const needle = document.querySelector('.dial-needle');
 
-    if (!audio) return;
+    if (!audio || !playBtn) return;
 
     function updateStation() {
         const station = RADIO_STATIONS[currentStationIndex];
-        stationLabel.textContent = `SINTONIZZATO: ${station.name}`;
-        if (needle) needle.style.left = `${station.freq}%`;
-
-        const wasPlaying = !audio.paused;
+        if (stationLabel) stationLabel.textContent = station.name;
         audio.src = station.url;
-        if (wasPlaying) {
-            audio.play().catch(e => console.log("Stream non disponibile momento"));
+        if (!audio.paused) {
+            audio.load();
+            audio.play().catch(e => console.log("Stream offline"));
         }
     }
 
     playBtn.addEventListener('click', () => {
         if (audio.paused) {
-            if (!audio.src) updateStation();
+            if (!audio.src || audio.src === window.location.href) updateStation();
             audio.play().then(() => {
                 playBtn.textContent = "STOP";
-                playBtn.style.background = "#222";
+                playBtn.classList.add('playing');
             }).catch(e => {
-                stationLabel.textContent = "ERRORE CONNESSIONE...";
+                console.warn("Play error:", e);
+                if (stationLabel) stationLabel.textContent = "OFFLINE/RETRY";
             });
         } else {
             audio.pause();
             playBtn.textContent = "PLAY";
-            playBtn.style.background = "#8b0000";
+            playBtn.classList.remove('playing');
         }
     });
 
@@ -443,28 +331,16 @@ function initVintageRadio() {
         updateStation();
     });
 
-    volSlider.addEventListener('input', (e) => {
-        audio.volume = e.target.value;
-        lastRadioVol = e.target.value;
-        if (audio.volume > 0) {
-            isRadioMuted = false;
-            muteBtn.textContent = "🔊";
-        }
-    });
-
     muteBtn.addEventListener('click', () => {
         isRadioMuted = !isRadioMuted;
-        if (isRadioMuted) {
-            audio.volume = 0;
-            muteBtn.textContent = "🔇";
-            volSlider.value = 0;
-        } else {
-            audio.volume = lastRadioVol;
-            muteBtn.textContent = "🔊";
-            volSlider.value = lastRadioVol;
-        }
+        audio.volume = isRadioMuted ? 0 : lastRadioVol;
+        muteBtn.textContent = isRadioMuted ? "🔇" : "🔊";
     });
 
-    // Inizializza visualizzazione al caricamento
-    updateStation();
+    // Inizializzazione visuale
+    const initialStation = RADIO_STATIONS[currentStationIndex];
+    if (stationLabel) stationLabel.textContent = initialStation.name;
+    audio.src = initialStation.url;
 }
+
+document.addEventListener('DOMContentLoaded', init);

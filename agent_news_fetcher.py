@@ -61,36 +61,46 @@ RSS_SOURCES = [
 # Database Immagini Elite (per evitare ripetizioni)
 IMAGE_POOLS = {
     "sport": [
-        "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800", # Stadio
-        "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800", # Basket
-        "https://images.unsplash.com/photo-1519861531473-920026238cbf?w=800", # Volley
-        "https://images.unsplash.com/photo-1461896704190-3213c9ad81e1?w=800"  # Atletica
+        "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800",
+        "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800",
+        "https://images.unsplash.com/photo-1519861531473-920026238cbf?w=800",
+        "https://images.unsplash.com/photo-1461896704190-3213c9ad81e1?w=800",
+        "https://images.unsplash.com/photo-1504450758481-7338ef75240f?w=800"
     ],
     "lavoro": [
-        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800", # Ufficio/Architettura
-        "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800", # Business
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800"  # Teams
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
+        "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800",
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800",
+        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800", # Meeting
+        "https://images.unsplash.com/photo-1454165833267-035fafa85ea4?w=800"     # Laptop/Work
     ],
     "moda": [
-        "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800", # Vestiti
-        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800", # Fashion
-        "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800"  # Stilista
+        "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800",
+        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800",
+        "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800",
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800", # Shop
+        "https://images.unsplash.com/photo-1551232864-3f0890e580d9?w=800"     # Detail
     ],
     "estetica": [
-        "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800", # SPA
-        "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800", # Beauty
-        "https://images.unsplash.com/photo-1512496011951-a09947573993?w=800"  # Skincare
+        "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800",
+        "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800",
+        "https://images.unsplash.com/photo-1512496011951-a09947573993?w=800",
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800"  # Salon
     ],
     "cronaca": [
-        "https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800", # News generica
-        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800", # Tech/Dati
-        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800", # Futuro
-        "https://images.unsplash.com/photo-1444653302762-80512c47ee5d?w=800"  # Città
+        "https://images.unsplash.com/photo-1501183638710-841dd1904471?w=800",
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800",
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800",
+        "https://images.unsplash.com/photo-1444653302762-80512c47ee5d?w=800"
     ],
-    "marche": [
-        "https://images.unsplash.com/photo-1544085311-11a028465b03?w=800", # Conero
-        "https://images.unsplash.com/photo-1528114039593-4366cc08227d?w=800", # Architettura Marche
-        "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800"  # Italia generica
+    "incidente": [
+        "https://images.unsplash.com/photo-1501700493717-360341ea22a3?w=800", # Sirene
+        "https://images.unsplash.com/photo-1549480132-71d53e6836ca?w=800", # Road accident
+        "https://images.unsplash.com/photo-1594220302568-15468846c243?w=800"  # Lights
+    ],
+    "meteo": [
+        "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800", # Cloud
+        "https://images.unsplash.com/photo-1534088568595-a066f710b81f?w=800"  # Sea storm
     ]
 }
 
@@ -189,6 +199,10 @@ def categorize_news(title, summary):
     if any(k in text for k in ["arrestat", "denunciat", "sequestr", "cocaina", "droga", "furto", "rapina"]): 
         return "cronaca"
 
+    # Nuove categorie specifiche per matching immagine
+    if any(k in text for k in ["incidente", "scontro", "tamponamento", "vittima", "morto", "deceduto", "ferito"]): return "incidente"
+    if any(k in text for k in ["meteo", "pioggia", "neve", "allerta", "vento", "grandine", "temporale"]): return "meteo"
+
     # Parole chiave Job Board potenziate
     if any(k in text for k in ["lavoro", "concorso", "assunzioni", "impiego", "cercasi", "offresi", "posto di lavoro", "hr ", "recruiting", "lavorare", "selezione personale", "tirocinio", "stage", "nuova apertura", "assume", "cerca personale", "bando", "graduatoria", "posti di", "cercano", "seleziona"]): return "lavoro"
     if any(k in text for k in ["calcio", "basket", "volley", "derby", "gol", "partita", "sport", "serie a", "serie b", "serie c"]): return "sport"
@@ -196,10 +210,12 @@ def categorize_news(title, summary):
     if any(k in text for k in ["estetica", "beauty", "trucco", "trattamento", "spa", "benessere"]): return "estetica"
     return "cronaca"
 
-def get_smart_image(cat, count):
-    # Usa il pool della categoria, selezionando con rotazione basata sul count
+def get_smart_image(cat, title_text):
+    # Usa l'hash del titolo per selezionare un'immagine in modo coerente e unico
+    import hashlib
+    h = int(hashlib.md5(title_text.encode()).hexdigest(), 16)
     pool = IMAGE_POOLS.get(cat, IMAGE_POOLS["cronaca"])
-    return pool[count % len(pool)]
+    return pool[h % len(pool)]
 
 def fetch_rss_news():
     all_news = []
@@ -214,7 +230,7 @@ def fetch_rss_news():
                 all_news.append(promo)
                 print(f"PINNED: {promo['title']} aggiunto (Scade: {promo['expires']})")
 
-    item_count = 0
+    item_count = random.randint(0, 100) # Seed casuale iniziale
     for source in RSS_SOURCES:
         try:
             # Se è una fonte dedicata al lavoro o concorsi, prendiamo più articoli
@@ -239,9 +255,9 @@ def fetch_rss_news():
                     img_match = re.search(r'<img src="([^"]+)"', entry.description)
                     if img_match: image_url = img_match.group(1)
 
-                # Se non trovata, usa lo Smart Fallback basato sulla categoria
+                # Se non trovata, usa lo Smart Fallback basato sulla categoria e hash titolo
                 if not image_url or "photo-1501183638710-841dd1904471" in image_url:
-                    image_url = get_smart_image(cat, item_count)
+                    image_url = get_smart_image(cat, title)
 
                 all_news.append({
                     "id": random.randint(1000, 99999),
@@ -249,9 +265,13 @@ def fetch_rss_news():
                     "original_title": title, "category": cat, "province": "MARCHE",
                     "tag": "RADAR_LIVE", "author": f"Agent_{source['name'].replace(' ', '_')}",
                     "date": datetime.now().strftime("%d %B %Y %H:%M").upper(),
-                    "image": image_url, "size": "normal", "summary": summary + "...",
-                    "source_url": entry.link, "source_name": source['name']
+                    "image": image_url,
+                    "size": "normal",
+                    "summary": summary + "...",
+                    "source_url": entry.link,
+                    "source_name": source['name']
                 })
+                item_count += 1
                 item_count += 1
         except Exception: pass
     
@@ -274,7 +294,7 @@ def fetch_rss_news():
                 "tag": "TARGET_OFFER",
                 "author": "System_Filler",
                 "date": datetime.now().strftime("%d %B %Y %H:%M").upper(),
-                "image": get_smart_image("lavoro", item_id),
+                "image": get_smart_image("lavoro", f['title']),
                 "size": "normal",
                 "summary": f['summary'],
                 "source_url": f['source_url'],
