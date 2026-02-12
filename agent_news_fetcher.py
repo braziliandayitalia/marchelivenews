@@ -6,6 +6,22 @@ import re
 from datetime import datetime, timedelta
 
 # Fonti RSS Marche - Elite+
+import random
+import re
+
+# --- OPPORTUNITÀ EVERGREEN (Filler per Hub Lavoro se news fresche < 12) ---
+JOB_FILLERS = [
+    {"title": "REDAZIONE_OPEN: CERCASI REPORTER PER MARCHE LIVE", "summary": "Sei un appassionato di giornalismo o lifestyle? Marche Live cerca collaboratori sul territorio per raccontare le eccellenze regionali. Candidati ora!", "source_name": "Marche Live Redazione", "province": "MARCHE", "source_url": "#"},
+    {"title": "SOCIAL_MANAGER: POSIZIONE APERTA SETTORE EVENTI", "summary": "Importante agenzia marchigiana cerca Social Media Manager per gestione eventi estivi. Richiesta conoscenza territorio e creatività.", "source_name": "Job Marche Elite", "province": "ANCONA", "source_url": "#"},
+    {"title": "TECNICO_AUDIO: TOUR ESTIVO 2026 MARCHE", "summary": "Cercasi tecnico audio/luci per service regionale. Esperienza minima richiesta. Disponibilità weekend e flessibilità oraria.", "source_name": "Music & Sound Marche", "province": "MACERATA", "source_url": "#"},
+    {"title": "AGENTI_VENDITA: ESPANSIONE RETE COMMERCIALE ADRIATICA", "summary": "Azienda leader nel settore servizi alle imprese seleziona 3 agenti per la costa marchigiana. Fisso garantito + provvigioni.", "source_name": "Business Network", "province": "PESARO", "source_url": "#"},
+    {"title": "STAGE_FORMATIVO: DIGITAL MARKETING & AI", "summary": "Startup innovativa offre stage curriculare o extracurriculare in Digital Marketing con focus su AI generative applicate ai media.", "source_name": "Tech Hub Marche", "province": "CIVITANOVA", "source_url": "#"},
+    {"title": "HOSTESS_STEWARD: EVENTI FIERISTICI FERMO", "summary": "Agenzia seleziona personale per accoglienza durante le fiere di marzo. Bella presenza e conoscenza inglese base.", "source_name": "Eventi Marche", "province": "FERMO", "source_url": "#"},
+    {"title": "SOFTWARE_DEV: JUNIOR POSITION (FULL REMOTE)", "summary": "Azienda IT di Ascoli Piceno cerca sviluppatore JavaScript junior. Possibilità di lavoro 100% remoto. Formazione inclusa.", "source_name": "Cyber Marche Tech", "province": "ASCOLI", "source_url": "#"},
+    {"title": "PERSONAL_LIFE_JOB: ASSISTENZA DOMESTICA ELITE", "summary": "Famiglia cerca assistente domestica referenziata per gestione villa e servizi. Richiesta massima serietà e discrezione.", "source_name": "Elite Services", "province": "MACERATA", "source_url": "#"},
+    {"title": "CUOCO_TRADIZIONE: RISTORANTE TIPICO CERCA PERSONALE", "summary": "Rinomato locale dell'entroterra cerca cuoco specializzato in cucina marchigiana. Contratto stagionale con possibilità rinnovo.", "source_name": "Tavola Marche", "province": "ANCONA", "source_url": "#"}
+]
+
 RSS_SOURCES = [
     {"name": "Ansa Marche", "url": "https://www.ansa.it/marche/notizie/marche_rss.xml"},
     {"name": "Cronache Maceratesi", "url": "https://www.cronachemaceratesi.it/feed/"},
@@ -25,7 +41,21 @@ RSS_SOURCES = [
     {"name": "Vivere Civitanova Lavoro", "url": "https://www.viverecivitanova.it/rss/lavoro.xml"},
     {"name": "Vivere Pesaro Lavoro", "url": "https://www.viverepesaro.it/rss/lavoro.xml"},
     {"name": "Vivere Fano Lavoro", "url": "https://www.viverefano.it/rss/lavoro.xml"},
-    {"name": "CercoLavoro Marche", "url": "https://www.cercolavoro.com/rss/lavoro-marche.xml"}
+    {"name": "Vivere Senigallia Lavoro", "url": "https://www.viveresenigallia.it/rss/lavoro.xml"},
+    {"name": "Vivere Jesi Lavoro", "url": "https://www.viverejesi.it/rss/lavoro.xml"},
+    {"name": "Vivere Recanati Lavoro", "url": "https://www.vivererecanati.it/rss/lavoro.xml"},
+    {"name": "Vivere Fermo Lavoro", "url": "https://www.viverefermo.it/rss/lavoro.xml"},
+    {"name": "Vivere Ascoli Lavoro", "url": "https://www.vivereascoli.it/rss/lavoro.xml"},
+    {"name": "Vivere San Benedetto Lavoro", "url": "https://www.viveresanbenedetto.it/rss/lavoro.xml"},
+    {"name": "Vivere Urbino Lavoro", "url": "https://www.vivereurbino.it/rss/lavoro.xml"},
+    {"name": "CercoLavoro Marche", "url": "https://www.cercolavoro.com/rss/lavoro-marche.xml"},
+    {"name": "AnconaToday Lavoro", "url": "https://www.anconatoday.it/rss/lavoro/"},
+    {"name": "MacerataToday Lavoro", "url": "https://www.maceratatoday.it/rss/lavoro/"},
+    {"name": "Concorsi Pubblici Marche", "url": "https://www.concorsipubblici.com/rss/regione/marche.xml"},
+    {"name": "Concorsando Marche", "url": "https://www.concorsando.it/blog/category/concorsi-per-regione/marche/feed/"},
+    {"name": "Marche Notizie Lavoro", "url": "https://www.marchenotizie.info/category/lavoro/feed/"},
+    {"name": "Cronache Fermane Lavoro", "url": "https://www.cronachefermane.it/category/lavoro/feed/"},
+    {"name": "Corriere Adriatico", "url": "https://www.corriereadriatico.it/rss/marche.xml"}
 ]
 
 # Database Immagini Elite (per evitare ripetizioni)
@@ -154,8 +184,13 @@ EVENTS = [
 
 def categorize_news(title, summary):
     text = (title + " " + summary).lower()
+    
+    # Esclusioni per evitare falsi positivi nel settore Lavoro (Cronaca mascherata)
+    if any(k in text for k in ["arrestat", "denunciat", "sequestr", "cocaina", "droga", "furto", "rapina"]): 
+        return "cronaca"
+
     # Parole chiave Job Board potenziate
-    if any(k in text for k in ["lavoro", "concorso", "assunzioni", "impiego", "cercasi", "offresi", "posto di lavoro", "hr ", "recruiting"]): return "lavoro"
+    if any(k in text for k in ["lavoro", "concorso", "assunzioni", "impiego", "cercasi", "offresi", "posto di lavoro", "hr ", "recruiting", "lavorare", "selezione personale", "tirocinio", "stage", "nuova apertura", "assume", "cerca personale", "bando", "graduatoria", "posti di", "cercano", "seleziona"]): return "lavoro"
     if any(k in text for k in ["calcio", "basket", "volley", "derby", "gol", "partita", "sport", "serie a", "serie b", "serie c"]): return "sport"
     if any(k in text for k in ["moda", "fashion", "abbigliamento", "boutique", "sfilata"]): return "moda"
     if any(k in text for k in ["estetica", "beauty", "trucco", "trattamento", "spa", "benessere"]): return "estetica"
@@ -182,8 +217,11 @@ def fetch_rss_news():
     item_count = 0
     for source in RSS_SOURCES:
         try:
+            # Se è una fonte dedicata al lavoro o concorsi, prendiamo più articoli
+            limit = 25 if any(k in source['name'] for k in ["Lavoro", "Concorsi", "Concorsando", "Today"]) else 10
+            print(f"DEBUG: Scansione {source['name']} (Limit: {limit})...")
             feed = feedparser.parse(source['url'])
-            for entry in feed.entries[:10]:
+            for entry in feed.entries[:limit]:
                 title = entry.title.strip()
                 summary = re.sub('<[^<]+?>', '', entry.get('summary', '') or entry.get('description', '')).strip()[:300]
                 cat = categorize_news(title, summary)
@@ -218,8 +256,31 @@ def fetch_rss_news():
         except Exception: pass
     
     all_news.extend(EVENTS)
-    # Ordina: Prima le news di "LAVORO" più recenti, poi il resto casuale
+    
     lavoro_news = [n for n in all_news if n['category'] == 'lavoro']
+    
+    # --- FILLER LOGIC: Se abbiamo poche news lavoro reali, aggiungiamo filler ---
+    if len(lavoro_news) < 12:
+        needed = 12 - len(lavoro_news)
+        fillers = random.sample(JOB_FILLERS, min(needed, len(JOB_FILLERS)))
+        for f in fillers:
+            item_id = random.randint(10000, 99999)
+            lavoro_news.append({
+                "id": item_id,
+                "title": f['title'],
+                "original_title": f['title'],
+                "category": "lavoro",
+                "province": f['province'],
+                "tag": "TARGET_OFFER",
+                "author": "System_Filler",
+                "date": datetime.now().strftime("%d %B %Y %H:%M").upper(),
+                "image": get_smart_image("lavoro", item_id),
+                "size": "normal",
+                "summary": f['summary'],
+                "source_url": f['source_url'],
+                "source_name": f['source_name']
+            })
+
     other_news = [n for n in all_news if n['category'] != 'lavoro']
     
     random.shuffle(other_news)
