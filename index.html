@@ -66,6 +66,7 @@
             <a href="#" class="nav-btn" data-category="vicino-a-noi">VICINO_A_NOI</a>
             <a href="#" class="nav-btn" data-category="curiosita">CURIOSITÀ</a>
             <a href="#" class="nav-btn" data-category="ricette">RICETTE</a>
+
         </div>
     </nav>
 
@@ -213,35 +214,45 @@
         </div>
     </footer>
 
-    <!-- 📻 RADIO VINTAGE "RADIOLINA" -->
-    <div class="vintage-radio" id="js-vintage-radio">
-        <div class="radio-body">
-            <div class="radio-grill"></div>
-            <div class="radio-controls">
-                <div class="radio-dial-container">
-                    <div class="radio-dial" id="js-radio-dial">
-                        <div class="dial-needle"></div>
-                    </div>
-                    <div class="radio-freq-list">
-                        <span>AM</span>
-                        <span>FM</span>
-                    </div>
-                </div>
-                <div class="radio-buttons">
-                    <button class="radio-btn" id="js-radio-prev" title="Sintonizza Giù">◀</button>
-                    <button class="radio-btn play-btn" id="js-radio-play">PLAY</button>
-                    <button class="radio-btn" id="js-radio-next" title="Sintonizza Su">▶</button>
-                </div>
-                <div class="radio-volume-ctrl">
-                    <button class="mute-btn" id="js-radio-mute" title="Muto">🔊</button>
-                    <input type="range" min="0" max="1" step="0.1" value="0.5" class="vol-slider" id="js-radio-vol">
-                </div>
+    <audio id="js-radio-audio" crossorigin="anonymous"></audio>
+
+    <!-- 📻 ELITE CYBER HUD RADIO (Floating HUD) -->
+    <div class="elite-cyber-hud" id="js-elite-radio">
+        <div class="hud-glitch-bg"></div>
+        <div class="hud-header">
+            <div class="hud-status">
+                <span class="status-blink"></span> SIGNAL_STABLE
             </div>
-            <div class="radio-display">
-                <span id="js-radio-station">SINTONIZZAZIONE...</span>
+            <div class="hud-visualizer" id="js-hud-visualizer">
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
+                <div class="v-bar"></div>
             </div>
         </div>
-        <audio id="js-radio-audio" style="display:none;"></audio>
+        <div class="hud-body">
+            <div class="station-meta">
+                <span class="meta-label">STATION.ID</span>
+                <div class="station-name-scroll">
+                    <span id="js-radio-station">SINTONIZZAZIONE...</span>
+                </div>
+            </div>
+            <div class="hud-controls">
+                <button class="hud-btn" id="js-radio-prev" title="PREV">◀</button>
+                <button class="hud-play-btn" id="js-radio-play">PLAY_SYSTEM</button>
+                <button class="hud-btn" id="js-radio-next" title="NEXT">▶</button>
+            </div>
+            <div class="hud-footer">
+                <button class="hud-mute" id="js-radio-mute">🔊</button>
+                <div class="hud-vol-bar">
+                    <div class="vol-fill" style="width: 50%;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script data-goatcounter="https://marchelivenews.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

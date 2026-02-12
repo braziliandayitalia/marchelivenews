@@ -6,11 +6,11 @@ let currentProvince = 'all';
 let activeUpdates = [];
 
 const RADIO_STATIONS = [
-    { name: "RADIO SUBASIO", url: "https://icy.unitedradio.it/Subasio.mp3" },
-    { name: "RADIO ARANCIA", url: "http://icecast.fluidstream.it/radioarancia.mp3" },
-    { name: "RADIO LINEA n.1", url: "http://stream.radiolinea.it/radiolinea.mp3" },
-    { name: "RADIO VERONICA", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
-    { name: "RADIO 24", url: "https://shoutcast.radio24.it:8000/stream" }
+    { name: "RADIO SUBASIO (HTTPS)", url: "https://icy.unitedradio.it/Subasio.mp3" },
+    { name: "RADIO 24 (OFFICIAL)", url: "https://shoutcast.radio24.it:8000/stream" },
+    { name: "RADIO VERONICA (LIVE)", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
+    { name: "RADIO ARANCIA (NETWORK)", url: "https://91.121.144.141:8000/stream" },
+    { name: "RADIO LINEA (HIT)", url: "https://stream.radiolinea.it/radiolinea.mp3" }
 ];
 let currentStationIndex = 0;
 let isRadioMuted = false;
@@ -308,16 +308,16 @@ function initEliteRadio() {
         if (audio.paused) {
             if (!audio.src || audio.src === window.location.href) updateStation();
             audio.play().then(() => {
-                playBtn.textContent = "STOP";
-                playBtn.classList.add('playing');
+                playBtn.textContent = "STOP_SYSTEM";
+                document.getElementById('js-elite-radio').classList.add('playing');
             }).catch(e => {
                 console.warn("Play error:", e);
-                if (stationLabel) stationLabel.textContent = "OFFLINE/RETRY";
+                if (stationLabel) stationLabel.textContent = "SIGNAL_LOST";
             });
         } else {
             audio.pause();
-            playBtn.textContent = "PLAY";
-            playBtn.classList.remove('playing');
+            playBtn.textContent = "PLAY_SYSTEM";
+            document.getElementById('js-elite-radio').classList.remove('playing');
         }
     });
 
@@ -335,12 +335,29 @@ function initEliteRadio() {
         isRadioMuted = !isRadioMuted;
         audio.volume = isRadioMuted ? 0 : lastRadioVol;
         muteBtn.textContent = isRadioMuted ? "🔇" : "🔊";
+        updateVolUI();
     });
 
+    const volBar = document.querySelector('.hud-vol-bar');
+    if (volBar) {
+        volBar.addEventListener('click', (e) => {
+            const rect = volBar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(1, x / rect.width));
+            audio.volume = pct;
+            lastRadioVol = pct;
+            isRadioMuted = (pct === 0);
+            updateVolUI();
+        });
+    }
+
+    function updateVolUI() {
+        const fill = document.querySelector('.vol-fill');
+        if (fill) fill.style.width = `${audio.volume * 100}%`;
+        if (muteBtn) muteBtn.textContent = (audio.volume === 0 || isRadioMuted) ? "🔇" : "🔊";
+    }
+
     // Inizializzazione visuale
-    const initialStation = RADIO_STATIONS[currentStationIndex];
-    if (stationLabel) stationLabel.textContent = initialStation.name;
-    audio.src = initialStation.url;
 }
 
 document.addEventListener('DOMContentLoaded', init);
