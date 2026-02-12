@@ -5,6 +5,17 @@ let currentCategory = 'all';
 let currentProvince = 'all';
 let activeUpdates = [];
 
+const RADIO_STATIONS = [
+    { name: "RADIO SUBASIO (HIT/POP)", url: "https://subasioradio.fast-real.com/subasio.mp3", freq: 15 },
+    { name: "RADIO ARANCIA (MARCHE NEWS)", url: "http://icecast.fluidstream.it/radioarancia.mp3", freq: 35 },
+    { name: "RADIO LINEA n.1 (VIBES)", url: "http://icecast.fluidstream.it/radiolinea.mp3", freq: 55 },
+    { name: "RADIO VERONICA (VINTAGE)", url: "http://fm1.radioveronica.it:8000/stream", freq: 75 },
+    { name: "RADIO 24 (TALK/NEWSPAPER)", url: "https://shoutcast.radio24.it:8000/listen.mp3", freq: 90 }
+];
+let currentStationIndex = 0;
+let isRadioMuted = false;
+let lastRadioVol = 0.5;
+
 async function loadAllData() {
     console.log("🚀 AGENTE_ELITE: Inizializzazione sistema...");
 
@@ -50,6 +61,7 @@ function init() {
     startStatusSimulation();
     startTrafficTimer();
     setupIntersectionObserver();
+    initVintageRadio();
 }
 
 function setupIntersectionObserver() {
@@ -87,7 +99,10 @@ function renderBentoGrid() {
         displayItems = allCuriosities;
     } else {
         displayItems = newsData;
-        if (currentCategory !== 'all') {
+        if (currentCategory === 'all') {
+            // Escludiamo il lavoro dalla home per renderlo esclusivo
+            displayItems = displayItems.filter(n => n.category !== 'lavoro');
+        } else {
             displayItems = displayItems.filter(n => n.category === currentCategory);
         }
     }
@@ -320,10 +335,12 @@ function renderWeather() {
 
 function startAgentScanner() {
     if (!newsData || newsData.length === 0) return;
-    activeUpdates = newsData.slice(0, 15).map(n => ({ source: n.source_name.toUpperCase(), text: n.original_title, time: n.date.split(' ').pop() }));
+    // Escludiamo il lavoro dal radar ticker in home
+    const radarPool = newsData.filter(n => n.category !== 'lavoro');
+    activeUpdates = radarPool.slice(0, 15).map(n => ({ source: n.source_name.toUpperCase(), text: n.original_title, time: n.date.split(' ').pop() }));
     renderRadarTicker();
     setInterval(() => {
-        const up = newsData[Math.floor(Math.random() * newsData.length)];
+        const up = radarPool[Math.floor(Math.random() * radarPool.length)];
         const time = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
         activeUpdates.unshift({ source: up.source_name.toUpperCase(), text: up.original_title, time: time });
         if (activeUpdates.length > 15) activeUpdates.pop();
@@ -374,3 +391,80 @@ function simulateReport() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// 📻 RADIOLINA VINTAGE LOGIC
+function initVintageRadio() {
+    const audio = document.getElementById('js-radio-audio');
+    const playBtn = document.getElementById('js-radio-play');
+    const prevBtn = document.getElementById('js-radio-prev');
+    const nextBtn = document.getElementById('js-radio-next');
+    const volSlider = document.getElementById('js-radio-vol');
+    const muteBtn = document.getElementById('js-radio-mute');
+    const stationLabel = document.getElementById('js-radio-station');
+    const needle = document.querySelector('.dial-needle');
+
+    if (!audio) return;
+
+    function updateStation() {
+        const station = RADIO_STATIONS[currentStationIndex];
+        stationLabel.textContent = `SINTONIZZATO: ${station.name}`;
+        if (needle) needle.style.left = `${station.freq}%`;
+
+        const wasPlaying = !audio.paused;
+        audio.src = station.url;
+        if (wasPlaying) {
+            audio.play().catch(e => console.log("Stream non disponibile momento"));
+        }
+    }
+
+    playBtn.addEventListener('click', () => {
+        if (audio.paused) {
+            if (!audio.src) updateStation();
+            audio.play().then(() => {
+                playBtn.textContent = "STOP";
+                playBtn.style.background = "#222";
+            }).catch(e => {
+                stationLabel.textContent = "ERRORE CONNESSIONE...";
+            });
+        } else {
+            audio.pause();
+            playBtn.textContent = "PLAY";
+            playBtn.style.background = "#8b0000";
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        currentStationIndex = (currentStationIndex + 1) % RADIO_STATIONS.length;
+        updateStation();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        currentStationIndex = (currentStationIndex - 1 + RADIO_STATIONS.length) % RADIO_STATIONS.length;
+        updateStation();
+    });
+
+    volSlider.addEventListener('input', (e) => {
+        audio.volume = e.target.value;
+        lastRadioVol = e.target.value;
+        if (audio.volume > 0) {
+            isRadioMuted = false;
+            muteBtn.textContent = "🔊";
+        }
+    });
+
+    muteBtn.addEventListener('click', () => {
+        isRadioMuted = !isRadioMuted;
+        if (isRadioMuted) {
+            audio.volume = 0;
+            muteBtn.textContent = "🔇";
+            volSlider.value = 0;
+        } else {
+            audio.volume = lastRadioVol;
+            muteBtn.textContent = "🔊";
+            volSlider.value = lastRadioVol;
+        }
+    });
+
+    // Inizializza visualizzazione al caricamento
+    updateStation();
+}

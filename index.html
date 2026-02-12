@@ -213,6 +213,37 @@
         </div>
     </footer>
 
+    <!-- 📻 RADIO VINTAGE "RADIOLINA" -->
+    <div class="vintage-radio" id="js-vintage-radio">
+        <div class="radio-body">
+            <div class="radio-grill"></div>
+            <div class="radio-controls">
+                <div class="radio-dial-container">
+                    <div class="radio-dial" id="js-radio-dial">
+                        <div class="dial-needle"></div>
+                    </div>
+                    <div class="radio-freq-list">
+                        <span>AM</span>
+                        <span>FM</span>
+                    </div>
+                </div>
+                <div class="radio-buttons">
+                    <button class="radio-btn" id="js-radio-prev" title="Sintonizza Giù">◀</button>
+                    <button class="radio-btn play-btn" id="js-radio-play">PLAY</button>
+                    <button class="radio-btn" id="js-radio-next" title="Sintonizza Su">▶</button>
+                </div>
+                <div class="radio-volume-ctrl">
+                    <button class="mute-btn" id="js-radio-mute" title="Muto">🔊</button>
+                    <input type="range" min="0" max="1" step="0.1" value="0.5" class="vol-slider" id="js-radio-vol">
+                </div>
+            </div>
+            <div class="radio-display">
+                <span id="js-radio-station">SINTONIZZAZIONE...</span>
+            </div>
+        </div>
+        <audio id="js-radio-audio" style="display:none;"></audio>
+    </div>
+
     <script data-goatcounter="https://marchelivenews.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <script src="main.js?v=2.6"></script>
 </body>
