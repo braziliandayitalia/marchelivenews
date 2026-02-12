@@ -5,14 +5,15 @@ let currentCategory = 'all';
 let currentProvince = 'all';
 let activeUpdates = [];
 
-const RADIO_STATIONS = [
-    { name: "RADIO SUBASIO (HTTPS)", url: "https://icy.unitedradio.it/Subasio.mp3" },
-    { name: "RADIO 24 (OFFICIAL)", url: "https://shoutcast.radio24.it:8000/stream" },
-    { name: "RADIO VERONICA (LIVE)", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
-    { name: "RADIO ARANCIA (NETWORK)", url: "https://91.121.144.141:8000/stream" },
-    { name: "RADIO LINEA (HIT)", url: "https://stream.radiolinea.it/radiolinea.mp3" }
+const STATIONS = [
+    { name: "RADIO SUBASIO", url: "https://icy.unitedradio.it/Subasio.mp3" },
+    { name: "RADIO ARANCIA", url: "http://icecast.fluidstream.it/radioarancia.mp3" },
+    { name: "RADIO LINEA n.1", url: "http://stream.radiolinea.it/radiolinea.mp3" },
+    { name: "RADIO VERONICA", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
+    { name: "RADIO 24", url: "https://shoutcast.radio24.it:8000/stream" },
+    { name: "NEWS LIVE (BBC)", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" }
 ];
-let currentStationIndex = 0;
+let currentStation = 0;
 let isRadioMuted = false;
 let lastRadioVol = 0.5;
 
@@ -62,7 +63,7 @@ function init() {
     startStatusSimulation();
     startTrafficTimer();
     setupIntersectionObserver();
-    initEliteRadio();
+    initMiniRadio();
 }
 
 function setupIntersectionObserver() {
@@ -284,80 +285,62 @@ function renderTraffic() {
 }
 
 // 📻 ELITE RADIO MINI LOGIC
-function initEliteRadio() {
-    const audio = document.getElementById('js-radio-audio');
-    const playBtn = document.getElementById('js-radio-play');
-    const prevBtn = document.getElementById('js-radio-prev');
-    const nextBtn = document.getElementById('js-radio-next');
-    const muteBtn = document.getElementById('js-radio-mute');
-    const stationLabel = document.getElementById('js-radio-station');
+// 📻 MINI RADIO LOGIC (Adattamento Codice Utente)
+function initMiniRadio() {
+    const audio = document.getElementById("radioAudio");
+    const playBtn = document.getElementById("playBtn");
+    const muteBtn = document.getElementById("muteBtn");
+    const stationName = document.getElementById("stationName");
+    const volumeSlider = document.getElementById("volumeSlider");
 
     if (!audio || !playBtn) return;
 
-    function updateStation() {
-        const station = RADIO_STATIONS[currentStationIndex];
-        if (stationLabel) stationLabel.textContent = station.name;
-        audio.src = station.url;
-        if (!audio.paused) {
-            audio.load();
-            audio.play().catch(e => console.log("Stream offline"));
-        }
-    }
+    // Inizializzazione stazione
+    audio.src = STATIONS[currentStation].url;
+    stationName.textContent = STATIONS[currentStation].name;
 
-    playBtn.addEventListener('click', () => {
-        if (audio.paused) {
-            if (!audio.src || audio.src === window.location.href) updateStation();
-            audio.play().then(() => {
-                playBtn.textContent = "STOP_SYSTEM";
-                document.getElementById('js-elite-radio').classList.add('playing');
-            }).catch(e => {
-                console.warn("Play error:", e);
-                if (stationLabel) stationLabel.textContent = "SIGNAL_LOST";
-            });
-        } else {
-            audio.pause();
-            playBtn.textContent = "PLAY_SYSTEM";
-            document.getElementById('js-elite-radio').classList.remove('playing');
-        }
-    });
+    document.getElementById("nextBtn").onclick = () => {
+        currentStation = (currentStation + 1) % STATIONS.length;
+        changeStation();
+    };
 
-    nextBtn.addEventListener('click', () => {
-        currentStationIndex = (currentStationIndex + 1) % RADIO_STATIONS.length;
-        updateStation();
-    });
+    document.getElementById("prevBtn").onclick = () => {
+        currentStation = (currentStation - 1 + STATIONS.length) % STATIONS.length;
+        changeStation();
+    };
 
-    prevBtn.addEventListener('click', () => {
-        currentStationIndex = (currentStationIndex - 1 + RADIO_STATIONS.length) % RADIO_STATIONS.length;
-        updateStation();
-    });
-
-    muteBtn.addEventListener('click', () => {
-        isRadioMuted = !isRadioMuted;
-        audio.volume = isRadioMuted ? 0 : lastRadioVol;
-        muteBtn.textContent = isRadioMuted ? "🔇" : "🔊";
-        updateVolUI();
-    });
-
-    const volBar = document.querySelector('.hud-vol-bar');
-    if (volBar) {
-        volBar.addEventListener('click', (e) => {
-            const rect = volBar.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const pct = Math.max(0, Math.min(1, x / rect.width));
-            audio.volume = pct;
-            lastRadioVol = pct;
-            isRadioMuted = (pct === 0);
-            updateVolUI();
+    function changeStation() {
+        audio.src = STATIONS[currentStation].url;
+        stationName.textContent = STATIONS[currentStation].name;
+        audio.play().then(() => {
+            playBtn.textContent = "⏸️";
+        }).catch(e => {
+            console.warn("Stream error", e);
+            stationName.textContent = "STAZIONE OFFLINE";
         });
     }
 
-    function updateVolUI() {
-        const fill = document.querySelector('.vol-fill');
-        if (fill) fill.style.width = `${audio.volume * 100}%`;
-        if (muteBtn) muteBtn.textContent = (audio.volume === 0 || isRadioMuted) ? "🔇" : "🔊";
-    }
+    playBtn.onclick = () => {
+        if (audio.paused) {
+            audio.play().then(() => {
+                playBtn.textContent = "⏸️";
+            }).catch(e => {
+                stationName.textContent = "ERRORE CONNESSIONE";
+            });
+        } else {
+            audio.pause();
+            playBtn.textContent = "▶️";
+        }
+    };
 
-    // Inizializzazione visuale
+    volumeSlider.oninput = (e) => {
+        audio.volume = e.target.value / 100;
+    };
+
+    muteBtn.onclick = () => {
+        audio.muted = !audio.muted;
+        muteBtn.textContent = audio.muted ? "🔊" : "🔇";
+    };
 }
 
 document.addEventListener('DOMContentLoaded', init);

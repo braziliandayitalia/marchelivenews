@@ -217,41 +217,19 @@
     <audio id="js-radio-audio" crossorigin="anonymous"></audio>
 
     <!-- 📻 ELITE CYBER HUD RADIO (Floating HUD) -->
-    <div class="elite-cyber-hud" id="js-elite-radio">
-        <div class="hud-glitch-bg"></div>
-        <div class="hud-header">
-            <div class="hud-status">
-                <span class="status-blink"></span> SIGNAL_STABLE
-            </div>
-            <div class="hud-visualizer" id="js-hud-visualizer">
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-                <div class="v-bar"></div>
-            </div>
+    <audio id="radioAudio" preload="none"></audio>
+
+    <!-- 📻 MINI RADIO (User Proposal) -->
+    <div class="mini-radio">
+        <div class="station" id="stationName">RADIO_OFF</div>
+        <div class="controls">
+            <button id="prevBtn">⏮</button>
+            <button id="playBtn">▶️</button>
+            <button id="nextBtn">⏭</button>
         </div>
-        <div class="hud-body">
-            <div class="station-meta">
-                <span class="meta-label">STATION.ID</span>
-                <div class="station-name-scroll">
-                    <span id="js-radio-station">SINTONIZZAZIONE...</span>
-                </div>
-            </div>
-            <div class="hud-controls">
-                <button class="hud-btn" id="js-radio-prev" title="PREV">◀</button>
-                <button class="hud-play-btn" id="js-radio-play">PLAY_SYSTEM</button>
-                <button class="hud-btn" id="js-radio-next" title="NEXT">▶</button>
-            </div>
-            <div class="hud-footer">
-                <button class="hud-mute" id="js-radio-mute">🔊</button>
-                <div class="hud-vol-bar">
-                    <div class="vol-fill" style="width: 50%;"></div>
-                </div>
-            </div>
+        <div class="volume">
+            <input id="volumeSlider" type="range" min="0" max="100" value="60" />
+            <button id="muteBtn">🔇</button>
         </div>
     </div>
 
