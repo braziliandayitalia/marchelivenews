@@ -8,7 +8,7 @@ let activeUpdates = [];
 async function loadAllData() {
     console.log("🚀 AGENTE_ELITE: Inizializzazione sistema...");
 
-    const currentVersion = '2.5';
+    const currentVersion = '2.6';
     if (localStorage.getItem('marche_live_version') !== currentVersion) {
         if ('caches' in window) {
             try {
