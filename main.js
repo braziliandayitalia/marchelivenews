@@ -7,14 +7,14 @@ let activeUpdates = [];
 
 const STATIONS = [
     { name: "RADIO SUBASIO", url: "https://icy.unitedradio.it/Subasio.mp3" },
-    { name: "RADIO ARANCIA", url: "https://dir.fluidstream.net/radioarancia.mp3" },
-    { name: "RADIO LINEA n.1", url: "https://dir.fluidstream.net/radiolinea.mp3" },
-    { name: "RADIO VERONICA", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
-    { name: "RADIO AZZURRA", url: "https://dir.fluidstream.net/radioazzurra.mp3" },
-    { name: "RADIO STUDIO PIÙ", url: "https://dir.fluidstream.net/studiopiu.mp3" },
-    { name: "RADIO KISS KISS", url: "https://kk.fluidstream.eu/kk.mp3" },
-    { name: "RADIO DEEJAY", url: "https://mp3.kataweb.it/RadioDeejay" },
-    { name: "RTL 102.5", url: "https://shoutcast.rtl.it:8000/rtl1025.mp3" },
+    { name: "RADIO KISS KISS", url: "https://ice08k.fluidstream.net/KissKiss.mp3" },
+    { name: "RTL 102.5", url: "https://streamingv2.shoutcast.com/rtl-1025" },
+    { name: "RADIO DEEJAY", url: "https://radiodeejay-lh.akamaihd.net/i/RadioDeejay_Live_1@189857/index_128_a-p.m3u8" },
+    { name: "RADIO 105", url: "https://icecast.unitedradio.it/Radio105.mp3" },
+    { name: "VIRGIN RADIO", url: "https://icecast.unitedradio.it/Virgin.mp3" },
+    { name: "RAI RADIO 2", url: "https://icecdn-19d24861e90342cc8decb03c24c8a419.msvdn.net/icecastRelay/S35942484/yp5F67151K92/icecast" },
+    { name: "RAI RADIO 3", url: "https://icecdn-19d24861e90342cc8decb03c24c8a419.msvdn.net/icecastRelay/S56630579/yEbkcBtIoSwd/icecast" },
+    { name: "RADIO ITALIA", url: "https://radioitaliacom.akamaized.net/hls/live/2093141/radioitalia/playlist.m3u8" },
     { name: "NEWS LIVE (BBC)", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" }
 ];
 let currentStation = 0;
@@ -313,15 +313,44 @@ function initMiniRadio() {
         changeStation();
     };
 
+    let hls = null;
+
     function changeStation() {
-        audio.src = STATIONS[currentStation].url;
+        const url = STATIONS[currentStation].url;
         stationName.textContent = STATIONS[currentStation].name;
-        audio.play().then(() => {
-            playBtn.textContent = "⏸️";
-        }).catch(e => {
-            console.warn("Stream error", e);
-            stationName.textContent = "STAZIONE OFFLINE";
-        });
+
+        // Reset HLS if existing
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+
+        if (url.endsWith(".m3u8")) {
+            if (Hls.isSupported()) {
+                hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(audio);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    audio.play().then(() => {
+                        playBtn.textContent = "⏸️";
+                    }).catch(e => console.warn("HLS play error", e));
+                });
+            } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native Safari support
+                audio.src = url;
+                audio.play().then(() => {
+                    playBtn.textContent = "⏸️";
+                });
+            }
+        } else {
+            audio.src = url;
+            audio.play().then(() => {
+                playBtn.textContent = "⏸️";
+            }).catch(e => {
+                console.warn("Stream error", e);
+                stationName.textContent = "OFFLINE / BLINK";
+            });
+        }
     }
 
     playBtn.onclick = () => {
