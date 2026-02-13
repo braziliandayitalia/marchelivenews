@@ -7,10 +7,14 @@ let activeUpdates = [];
 
 const STATIONS = [
     { name: "RADIO SUBASIO", url: "https://icy.unitedradio.it/Subasio.mp3" },
-    { name: "RADIO ARANCIA", url: "http://icecast.fluidstream.it/radioarancia.mp3" },
+    { name: "RADIO ARANCIA", url: "https://dir.fluidstream.net/radioarancia.mp3" },
     { name: "RADIO LINEA n.1", url: "http://stream.radiolinea.it/radiolinea.mp3" },
     { name: "RADIO VERONICA", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
-    { name: "RADIO 24", url: "https://shoutcast.radio24.it:8000/stream" },
+    { name: "RADIO AZZURRA", url: "https://dir.fluidstream.net/radioazzurra.mp3" },
+    { name: "RADIO STUDIO PIÙ", url: "https://ice02.fluidstream.net/studio-piu.mp3" },
+    { name: "RADIO KISS KISS", url: "https://stream.kisskiss.it/kisskiss_mp3" },
+    { name: "RADIO DEEJAY", url: "http://mp3.kataweb.it:8000/RadioDeejay" },
+    { name: "RTL 102.5", url: "https://rtl.akamaized.net/hls/live/2002824/rtl1025/master.m3u8" },
     { name: "NEWS LIVE (BBC)", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" }
 ];
 let currentStation = 0;
@@ -341,6 +345,68 @@ function initMiniRadio() {
         audio.muted = !audio.muted;
         muteBtn.textContent = audio.muted ? "🔊" : "🔇";
     };
+
+    // Rende la radio trascinabile
+    const radioEl = document.getElementById("draggableRadio");
+    const handleEl = document.getElementById("radioHandle");
+    if (radioEl && handleEl) {
+        initDraggable(radioEl, handleEl);
+    }
+}
+
+function initDraggable(el, handle) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    handle.onmousedown = dragMouseDown;
+    handle.ontouchstart = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        // Non prevenire l'evento se è touch per permettere lo scrolling se necessario, 
+        // ma per un widget flottante lo preveniamo
+        if (e.type !== 'touchstart') e.preventDefault();
+
+        const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+        pos3 = clientX;
+        pos4 = clientY;
+        document.onmouseup = closeDragElement;
+        document.ontouchend = closeDragElement;
+        document.onmousemove = elementDrag;
+        document.ontouchmove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+        pos1 = pos3 - clientX;
+        pos2 = pos4 - clientY;
+        pos3 = clientX;
+        pos4 = clientY;
+
+        // Nuova posizione
+        let newTop = el.offsetTop - pos2;
+        let newLeft = el.offsetLeft - pos1;
+
+        // Limiti schermo
+        const padding = 10;
+        newTop = Math.max(padding, Math.min(window.innerHeight - el.offsetHeight - padding, newTop));
+        newLeft = Math.max(padding, Math.min(window.innerWidth - el.offsetWidth - padding, newLeft));
+
+        el.style.top = newTop + "px";
+        el.style.left = newLeft + "px";
+        el.style.right = "auto"; // Disabilita fixed right
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.ontouchend = null;
+        document.onmousemove = null;
+        document.ontouchmove = null;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

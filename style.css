@@ -972,21 +972,37 @@ blockquote {
     color: var(--text-dim);
 }
 
-/* 📻 MINI RADIO (User Proposal Design) */
+/* 📻 MINI RADIO (User Proposal Design + Drag) */
 .mini-radio {
     position: fixed;
-    top: 92px;
+    top: 100px;
     right: 20px;
-    z-index: 9999;
-    background: rgba(10, 18, 40, 0.95);
+    z-index: 10001;
+    background: rgba(10, 18, 40, 0.98);
     backdrop-filter: blur(10px);
     border: 1px solid var(--job-accent);
     border-radius: 12px;
     padding: 10px 12px;
-    width: 190px;
+    width: 200px;
     font-family: 'Outfit', sans-serif;
     color: #cfe9ff;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.2);
+    user-select: none;
+    touch-action: none;
+}
+
+.drag-handle {
+    background: rgba(16, 185, 129, 0.1);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+    margin: -10px -12px 10px -12px;
+    padding: 6px;
+    font-size: 9px;
+    text-align: center;
+    color: var(--job-accent);
+    cursor: move;
+    border-radius: 12px 12px 0 0;
+    font-weight: 800;
+    letter-spacing: 2px;
 }
 
 .station {
