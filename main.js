@@ -8,13 +8,13 @@ let activeUpdates = [];
 const STATIONS = [
     { name: "RADIO SUBASIO", url: "https://icy.unitedradio.it/Subasio.mp3" },
     { name: "RADIO ARANCIA", url: "https://dir.fluidstream.net/radioarancia.mp3" },
-    { name: "RADIO LINEA n.1", url: "http://stream.radiolinea.it/radiolinea.mp3" },
+    { name: "RADIO LINEA n.1", url: "https://dir.fluidstream.net/radiolinea.mp3" },
     { name: "RADIO VERONICA", url: "https://radioveronica.fluidstream.eu/veronica.mp3" },
     { name: "RADIO AZZURRA", url: "https://dir.fluidstream.net/radioazzurra.mp3" },
-    { name: "RADIO STUDIO PIÙ", url: "https://ice02.fluidstream.net/studio-piu.mp3" },
-    { name: "RADIO KISS KISS", url: "https://stream.kisskiss.it/kisskiss_mp3" },
-    { name: "RADIO DEEJAY", url: "http://mp3.kataweb.it:8000/RadioDeejay" },
-    { name: "RTL 102.5", url: "https://rtl.akamaized.net/hls/live/2002824/rtl1025/master.m3u8" },
+    { name: "RADIO STUDIO PIÙ", url: "https://dir.fluidstream.net/studiopiu.mp3" },
+    { name: "RADIO KISS KISS", url: "https://kk.fluidstream.eu/kk.mp3" },
+    { name: "RADIO DEEJAY", url: "https://mp3.kataweb.it/RadioDeejay" },
+    { name: "RTL 102.5", url: "https://shoutcast.rtl.it:8000/rtl1025.mp3" },
     { name: "NEWS LIVE (BBC)", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" }
 ];
 let currentStation = 0;
